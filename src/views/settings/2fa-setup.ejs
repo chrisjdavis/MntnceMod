@@ -14,7 +14,7 @@ title = 'Setup Two-Factor Authentication';
   <%- include('../partials/messages') %>
 
   <div class="mt-8">
-    <div class="bg-white dark:bg-gray-800 shadow rounded-lg">
+    <div class="bg-white dark:bg-[#111111] shadow rounded-lg border border-gray-200 dark:border-[#27272a]">
       <div class="px-4 py-5 sm:p-6">
         <div class="space-y-6">
           <!-- Step 1: Scan QR Code -->
@@ -24,12 +24,12 @@ title = 'Setup Two-Factor Authentication';
               <p>Scan this QR code with your authenticator app (like Google Authenticator, Authy, or Microsoft Authenticator).</p>
             </div>
             <div class="mt-4">
-              <div class="bg-white p-4 rounded-lg inline-block">
+              <div class="bg-white dark:bg-[#1a1a1a] p-4 rounded-lg inline-block border border-gray-200 dark:border-[#27272a]">
                 <img src="<%= qrCodeUrl %>" alt="2FA QR Code" class="w-48 h-48">
               </div>
               <div class="mt-4">
                 <p class="text-sm text-gray-500 dark:text-gray-400">If you can't scan the QR code, enter this code manually in your authenticator app:</p>
-                <code class="mt-2 block text-sm font-mono bg-gray-100 dark:bg-gray-700 p-2 rounded"><%= secret %></code>
+                <code class="mt-2 block text-sm font-mono bg-gray-100 dark:bg-[#1a1a1a] p-2 rounded-lg border border-gray-200 dark:border-[#27272a] text-gray-900 dark:text-white"><%= secret %></code>
               </div>
             </div>
           </div>
@@ -43,10 +43,13 @@ title = 'Setup Two-Factor Authentication';
             <form action="/settings/security/2fa/verify" method="POST" class="mt-4">
               <div class="max-w-xs">
                 <label for="code" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Verification Code</label>
-                <input type="text" name="code" id="code" required maxlength="6" pattern="[0-9]{6}" class="mt-1 block w-full p-4 border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-neon-blue focus:border-neon-blue sm:text-sm dark:bg-gray-700 dark:text-white" placeholder="Enter 6-digit code">
+                <input type="text" name="code" id="code" required maxlength="6" pattern="[0-9]{6}" 
+                  class="mt-1 block w-full p-4 border border-gray-300 dark:border-[#27272a] rounded-lg shadow-sm focus:ring-[#3b82f6] focus:border-[#3b82f6] sm:text-sm dark:bg-[#1a1a1a] dark:text-white" 
+                  placeholder="Enter 6-digit code">
               </div>
               <div class="mt-4">
-                <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-neon-blue hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neon-blue transition-colors duration-200">
+                <button type="submit" 
+                  class="inline-flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-[#3b82f6] hover:bg-[#2563eb] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#3b82f6] transition-colors duration-200">
                   Verify and Enable 2FA
                 </button>
               </div>

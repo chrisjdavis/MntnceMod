@@ -6,7 +6,9 @@ const userSchema = new mongoose.Schema({
   email: {
     type: String,
     required: true,
-    unique: true
+    unique: true,
+    trim: true,
+    lowercase: true
   },
   name: {
     type: String,
@@ -30,23 +32,13 @@ const userSchema = new mongoose.Schema({
     enum: ['active', 'inactive', 'suspended'],
     default: 'active'
   },
-  theme: {
-    type: String,
-    enum: ['default', 'dark'],
-    default: 'default'
-  },
   notifications: {
-    comments: {
-      type: Boolean,
-      default: true
-    },
-    mentions: {
-      type: Boolean,
-      default: true
-    },
-    updates: {
-      type: Boolean,
-      default: true
+    type: Map,
+    of: Boolean,
+    default: {
+      comments: true,
+      mentions: true,
+      updates: true
     }
   },
   twoFactorEnabled: {

@@ -36,33 +36,6 @@ router.get('/', isAuthenticated, (req, res) => {
   res.render('settings/profile', renderData);
 });
 
-// GET /settings/appearance - Show appearance settings page
-router.get('/appearance', isAuthenticated, (req, res) => {
-  res.locals.title = 'Appearance Settings';
-  const success = req.flash('success');
-  const error = req.flash('error');
-  
-  const renderData = {
-    user: req.user,
-    active: 'settings',
-    title: 'Appearance Settings',
-    path: '/settings/appearance'
-  };
-
-  // Only include messages if they have actual content
-  if (success && success.length > 0) {
-    renderData.messages = { success };
-  }
-  if (error && error.length > 0) {
-    renderData.messages = {
-      ...renderData.messages,
-      error
-    };
-  }
-  
-  res.render('settings/appearance', renderData);
-});
-
 // GET /settings/notifications - Show notifications settings page
 router.get('/notifications', isAuthenticated, (req, res) => {
   res.locals.title = 'Notification Settings';
@@ -117,32 +90,6 @@ router.post('/', isAuthenticated, async (req, res) => {
     console.error('Error updating profile:', error);
     req.flash('error', 'Error updating profile');
     res.redirect('/settings');
-  }
-});
-
-// Update theme
-router.post('/appearance', isAuthenticated, async (req, res) => {
-  try {
-    const { theme } = req.body;
-    
-    if (!['default', 'dark'].includes(theme)) {
-      req.flash('error', 'Invalid theme selection');
-      return res.redirect('/settings/appearance');
-    }
-
-    const user = await User.findById(req.user._id);
-    user.theme = theme;
-    await user.save();
-
-    // Update the theme in the session
-    req.session.theme = theme;
-
-    req.flash('success', 'Theme updated successfully');
-    res.redirect('/settings/appearance');
-  } catch (error) {
-    console.error('Error updating theme:', error);
-    req.flash('error', 'Error updating theme');
-    res.redirect('/settings/appearance');
   }
 });
 

@@ -9,17 +9,17 @@ title = 'Admin Dashboard';
 
         <!-- Stats Grid -->
         <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            <div class="card p-5">
+            <div class="card p-5 rounded-lg">
                 <h3 class="text-lg font-medium text-gray-400 truncate">Total Users</h3>
                 <p class="mt-1 text-3xl font-semibold text-white" id="totalUsers">Loading...</p>
             </div>
 
-            <div class="card p-5">
+            <div class="card p-5 rounded-lg">
                 <h3 class="text-lg font-medium text-gray-400 truncate">Total Pages</h3>
                 <p class="mt-1 text-3xl font-semibold text-white" id="totalPages">Loading...</p>
             </div>
 
-            <div class="card p-5">
+            <div class="card p-5 rounded-lg">
                 <h3 class="text-lg font-medium text-gray-400 truncate">Total Views</h3>
                 <p class="mt-1 text-3xl font-semibold text-white" id="totalViews">Loading...</p>
             </div>
@@ -27,12 +27,12 @@ title = 'Admin Dashboard';
 
         <!-- Users Table -->
         <div class="mt-8">
-            <div class="card">
+            <div class="card rounded-lg">
                 <div class="px-4 py-5 sm:px-6 flex justify-between items-center">
                     <h3 class="text-lg leading-6 font-medium text-white">Users</h3>
                     <div class="relative max-w-xs">
                         <input type="text" id="userSearch" 
-                            class="input w-full pr-10" 
+                            class="input w-full pr-10 rounded-lg" 
                             placeholder="Search users...">
                         <div class="absolute inset-y-0 right-0 pr-3 flex items-center">
                             <svg class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
@@ -66,12 +66,12 @@ title = 'Admin Dashboard';
 
         <!-- Analytics Chart -->
         <div class="mt-8">
-            <div class="card">
+            <div class="card rounded-lg">
                 <div class="px-4 py-5 sm:px-6">
                     <h3 class="text-lg leading-6 font-medium text-white">System Analytics</h3>
                 </div>
                 <div class="p-4">
-                    <canvas id="analyticsChart" class="w-full" height="300"></canvas>
+                    <canvas id="analyticsChart" class="w-full rounded-lg" height="300"></canvas>
                 </div>
             </div>
         </div>
