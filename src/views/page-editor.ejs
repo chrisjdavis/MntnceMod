@@ -14,14 +14,14 @@ title = state;
                 <p class="text-gray-400">Customize your maintenance page</p>
             </div>
             <div class="flex space-x-4">
-                <button type="button" id="previewButton" class="btn btn-secondary">
+                <button type="button" id="previewButton" class="btn py-2 px-4 btn-secondary">
                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                     </svg>
                     Preview
                 </button>
-                <button type="submit" form="pageForm" class="btn btn-primary">
+                <button type="submit" form="pageForm" class="btn py-2 px-4 btn-primary">
                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
                     </svg>
@@ -33,61 +33,84 @@ title = state;
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <!-- Editor Form -->
             <div class="space-y-6">
-                <form id="pageForm" class="space-y-6" action="<%= typeof page !== 'undefined' ? `/pages/${page._id}` : '/pages' %>" method="POST">
+                <form id="pageForm" action="<%= typeof page !== 'undefined' ? `/pages/${page._id}` : '/pages' %>" method="POST">
                     <% if (typeof page !== 'undefined') { %>
                         <input type="hidden" name="_method" value="PUT">
                     <% } %>
 
                     <!-- Basic Information -->
-                    <div class="card">
+                    <div class="card p-4">
                         <h3 class="text-lg font-semibold text-white mb-4">Basic Information</h3>
                         <div class="space-y-4">
                             <div>
                                 <label for="title" class="label">Title</label>
                                 <input type="text" id="title" name="title" required
-                                    class="input text-black w-full"
+                                    class="input bg-[#222222] border-dark-600 text-white w-full"
                                     value="<%= typeof page !== 'undefined' ? page.title : '' %>"
                                     placeholder="Enter page title">
                             </div>
                             <div>
                                 <label for="description" class="label">Description</label>
                                 <textarea id="description" name="description" required
-                                    class="input text-black w-full h-32"
+                                    class="input bg-[#222222] border-dark-600 text-white w-full h-32"
                                     placeholder="Enter page description"><%= typeof page !== 'undefined' ? page.description : '' %></textarea>
+                            </div>
+                            <div>
+                                <label for="content" class="label">Content</label>
+                                <textarea id="content" name="content" required
+                                    class="input bg-[#222222] border-dark-600 text-white w-full h-32"
+                                    placeholder="Enter page content"><%= typeof page !== 'undefined' ? page.content : '' %></textarea>
                             </div>
                             <div>
                                 <label for="status" class="label">Status</label>
                                 <select id="status" name="status" required
-                                    class="input text-black w-full">
-                                    <option value="operational" <%= typeof page !== 'undefined' && page.status === 'operational' ? 'selected' : '' %>>Operational</option>
-                                    <option value="degraded" <%= typeof page !== 'undefined' && page.status === 'degraded' ? 'selected' : '' %>>Degraded</option>
-                                    <option value="down" <%= typeof page !== 'undefined' && page.status === 'down' ? 'selected' : '' %>>Down</option>
-                                    <option value="maintenance" <%= typeof page !== 'undefined' && page.status === 'maintenance' ? 'selected' : '' %>>Maintenance</option>
+                                    class="input bg-[#222222] border-dark-600 text-white w-full">
+                                    <option value="draft" <%= typeof page !== 'undefined' && page.status === 'draft' ? 'selected' : '' %>>Draft</option>
+                                    <option value="published" <%= typeof page !== 'undefined' && page.status === 'published' ? 'selected' : '' %>>Published</option>
+                                    <option value="archived" <%= typeof page !== 'undefined' && page.status === 'archived' ? 'selected' : '' %>>Archived</option>
+                                    <option value="scheduled" <%= typeof page !== 'undefined' && page.status === 'scheduled' ? 'selected' : '' %>>Scheduled</option>
                                 </select>
+                            </div>
+
+                            <div>
+                                <label for="publishType" class="label">Publish Type</label>
+                                <select id="publishType" name="publishType" required
+                                    class="input bg-[#222222] border-dark-600 text-white w-full">
+                                    <option value="now" <%= typeof page === 'undefined' || !page.scheduledFor ? 'selected' : '' %>>Publish Now</option>
+                                    <option value="schedule" <%= typeof page !== 'undefined' && page.scheduledFor ? 'selected' : '' %>>Schedule for Later</option>
+                                </select>
+                            </div>
+
+                            <div id="scheduleDateContainer" class="<%= typeof page !== 'undefined' && page.scheduledFor ? '' : 'hidden' %>">
+                                <label for="scheduledFor" class="label">Schedule Date & Time</label>
+                                <input type="datetime-local" id="scheduledFor" name="scheduledFor"
+                                    class="input bg-[#222222] border-dark-600 text-white w-full"
+                                    value="<%= typeof page !== 'undefined' && page.scheduledFor ? new Date(page.scheduledFor).toISOString().slice(0, 16) : '' %>">
+                                <p class="mt-1 text-sm text-gray-500">Select when you want this page to be published</p>
                             </div>
                         </div>
                     </div>
 
                     <!-- Design Settings -->
-                    <div class="card">
+                    <div class="card p-4 mt-8">
                         <h3 class="text-lg font-semibold text-white mb-4">Design Settings</h3>
                         <div class="space-y-4">
                             <div>
                                 <label for="backgroundColor" class="label">Background Color</label>
                                 <input type="color" id="backgroundColor" name="design[backgroundColor]"
-                                    class="input text-black w-full h-10"
+                                    class="input bg-[#222222] border-dark-600 text-white w-full h-10"
                                     value="<%= typeof page !== 'undefined' ? page.design.backgroundColor : '#000000' %>">
                             </div>
                             <div>
                                 <label for="textColor" class="label">Text Color</label>
                                 <input type="color" id="textColor" name="design[textColor]"
-                                    class="input text-black w-full h-10"
+                                    class="input bg-[#222222] border-dark-600 text-white w-full h-10"
                                     value="<%= typeof page !== 'undefined' ? page.design.textColor : '#ffffff' %>">
                             </div>
                             <div>
                                 <label for="fontFamily" class="label">Font Family</label>
                                 <select id="fontFamily" name="design[fontFamily]"
-                                    class="input text-black w-full">
+                                    class="input bg-[#222222] border-dark-600 text-white w-full">
                                     <option value="Inter" <%= typeof page !== 'undefined' && page.design.fontFamily === 'Inter' ? 'selected' : '' %>>Inter</option>
                                     <option value="Roboto" <%= typeof page !== 'undefined' && page.design.fontFamily === 'Roboto' ? 'selected' : '' %>>Roboto</option>
                                     <option value="Open Sans" <%= typeof page !== 'undefined' && page.design.fontFamily === 'Open Sans' ? 'selected' : '' %>>Open Sans</option>
@@ -96,7 +119,7 @@ title = state;
                             <div>
                                 <label for="layout" class="label">Layout</label>
                                 <select id="layout" name="design[layout]"
-                                    class="input text-black w-full">
+                                    class="input bg-[#222222] border-dark-600 text-white w-full">
                                     <option value="centered" <%= typeof page !== 'undefined' && page.design.layout === 'centered' ? 'selected' : '' %>>Centered</option>
                                     <option value="left-aligned" <%= typeof page !== 'undefined' && page.design.layout === 'left-aligned' ? 'selected' : '' %>>Left Aligned</option>
                                     <option value="right-aligned" <%= typeof page !== 'undefined' && page.design.layout === 'right-aligned' ? 'selected' : '' %>>Right Aligned</option>
@@ -105,9 +128,16 @@ title = state;
                             <div>
                                 <label for="logo" class="label">Logo URL</label>
                                 <input type="url" id="logo" name="design[logo]"
-                                    class="input text-black w-full"
+                                    class="input bg-[#222222] border-dark-600 text-white w-full"
                                     value="<%= typeof page !== 'undefined' ? page.design.logo : '' %>"
                                     placeholder="Enter logo URL">
+                            </div>
+                            <div>
+                                <label for="customCss" class="label">Custom CSS</label>
+                                <textarea id="customCss" name="design[customCSS]"
+                                    class="input bg-[#222222] border-dark-600 text-white w-full h-32 font-mono text-sm"
+                                    placeholder="Enter custom CSS styles"><%= typeof page !== 'undefined' ? page.design.customCSS : '' %></textarea>
+                                <p class="mt-1 text-sm text-gray-500">Add custom CSS styles to further customize your page</p>
                             </div>
                         </div>
                     </div>
@@ -115,7 +145,7 @@ title = state;
             </div>
 
             <!-- Live Preview -->
-            <div class="card">
+            <div class="card p-4">
                 <h3 class="text-lg font-semibold text-white mb-4">Live Preview</h3>
                 <div id="preview" class="w-full h-[600px] rounded-lg overflow-hidden">
                     <iframe id="previewFrame" class="w-full h-full" frameborder="0"></iframe>
@@ -131,29 +161,92 @@ title = state;
     const previewButton = document.getElementById('previewButton');
     const previewFrame = document.getElementById('previewFrame');
     const form = document.getElementById('pageForm');
+    let previewTimeout;
 
-    function updatePreview() {
+    // Function to get form data as an object
+    function getFormData() {
         const formData = new FormData(form);
         const data = Object.fromEntries(formData.entries());
         
-        // Create a preview URL with the current form data
-        const previewUrl = `/api/preview?${new URLSearchParams(data)}`;
-        previewFrame.src = previewUrl;
+        // Handle nested design object
+        const designData = {};
+        Object.keys(data).forEach(key => {
+            if (key.startsWith('design[')) {
+                const designKey = key.replace('design[', '').replace(']', '');
+                designData[designKey] = data[key];
+                delete data[key];
+            }
+        });
+        data.design = designData;
+        return data;
+    }
+
+    // Function to update live preview
+    function updatePreview() {
+        // Clear any existing timeout
+        if (previewTimeout) {
+            clearTimeout(previewTimeout);
+        }
+
+        // Set a new timeout to update the preview after a short delay
+        previewTimeout = setTimeout(() => {
+            const data = getFormData();
+            const previewUrl = `/api/preview?${new URLSearchParams(data)}`;
+            previewFrame.src = previewUrl;
+        }, 300); // Wait 300ms after the last change before updating
     }
 
     // Update preview when form fields change
     form.addEventListener('input', updatePreview);
     form.addEventListener('change', updatePreview);
 
-    // Toggle preview panel
+    // Handle preview button click
     previewButton.addEventListener('click', () => {
-        const preview = document.getElementById('preview');
-        preview.classList.toggle('hidden');
-        if (!preview.classList.contains('hidden')) {
-            updatePreview();
+        const pageId = '<%= typeof page !== "undefined" ? page._id : "" %>';
+        if (pageId) {
+            // For existing pages, open the preview route
+            window.open(`/pages/${pageId}/preview`, '_blank');
+        } else {
+            // For new pages, submit form data to preview route
+            const data = getFormData();
+            const previewUrl = `/api/preview?${new URLSearchParams(data)}`;
+            window.open(previewUrl, '_blank');
         }
     });
 
-    // Initial preview
-    updatePreview();
+    // Handle publish type changes
+    document.addEventListener('DOMContentLoaded', function() {
+        const publishTypeSelect = document.getElementById('publishType');
+        const scheduleDateContainer = document.getElementById('scheduleDateContainer');
+        const statusSelect = document.getElementById('status');
+
+        // Function to update schedule container visibility
+        function updateScheduleVisibility() {
+            const isScheduled = publishTypeSelect.value === 'schedule';
+            scheduleDateContainer.classList.toggle('hidden', !isScheduled);
+            
+            // Update status based on publish type
+            if (isScheduled) {
+                statusSelect.value = 'draft';
+                statusSelect.disabled = true;
+            } else {
+                statusSelect.disabled = false;
+            }
+        }
+
+        // Initial state
+        updateScheduleVisibility();
+
+        // Listen for changes
+        publishTypeSelect.addEventListener('change', updateScheduleVisibility);
+        statusSelect.addEventListener('change', function() {
+            if (this.value === 'archived') {
+                publishTypeSelect.value = 'now';
+                updateScheduleVisibility();
+            }
+        });
+
+        // Initial preview load
+        updatePreview();
+    });
 </script> 

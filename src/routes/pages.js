@@ -41,7 +41,7 @@ router.get('/new', isAuthenticated, async (req, res) => {
       }
       return res.redirect('/pages');
     }
-    res.render('pages/new', {
+    res.render('page-editor', {
       user: req.user,
       active: 'pages'
     });
@@ -55,20 +55,20 @@ router.get('/new', isAuthenticated, async (req, res) => {
 // Create new page
 router.post('/', isAuthenticated, async (req, res) => {
   try {
-    const { title, description, content, status, design } = req.body;
+    const { title, description, content, status, design, publishType, scheduledFor } = req.body;
 
     // Check if user can create more pages
-    const canCreate = await req.user.canCreatePage();
-    if (!canCreate) {
-      req.flash('error_msg', 'You have reached your page limit. Please upgrade your plan.');
+    const canCreatePage = await req.user.canCreatePage();
+    if (!canCreatePage) {
+      req.flash('error_msg', 'You have reached your page limit. Please upgrade your plan to create more pages.');
       return res.redirect('/pages');
     }
 
-    const page = await Page.create({
+    // Create new page
+    const page = new Page({
       title,
       description,
       content,
-      status,
       user: req.user._id,
       design: {
         backgroundColor: design?.backgroundColor || '#000000',
@@ -76,9 +76,34 @@ router.post('/', isAuthenticated, async (req, res) => {
         fontFamily: design?.fontFamily || 'Inter',
         layout: design?.layout || 'centered',
         logo: design?.logo || '',
+        maxWidth: design?.maxWidth || 768,
+        logoSize: {
+          width: design?.logoSize?.width || 200,
+          height: design?.logoSize?.height || 50
+        },
         customCSS: design?.customCSS || ''
       }
     });
+
+    // Handle status and scheduling
+    if (publishType === 'schedule' && scheduledFor) {
+      page.status = 'scheduled';
+      page.scheduledFor = new Date(scheduledFor);
+    } else if (publishType === 'now') {
+      page.status = 'published';
+      page.scheduledFor = null;
+    } else if (status === 'archived') {
+      page.status = 'archived';
+      page.scheduledFor = null;
+    } else {
+      page.status = 'draft';
+      page.scheduledFor = null;
+    }
+
+    // Generate slug
+    page.slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+
+    await page.save();
 
     // Log activity
     await Activity.log(req.user._id, 'page_create', `Created new page: ${title}`);
@@ -120,8 +145,30 @@ router.get('/:id/edit', isAuthenticated, async (req, res) => {
       req.flash('error_msg', 'Page not found');
       return res.redirect('/pages');
     }
-    res.render('pages/edit', { 
-      page,
+
+    // Convert the page to a plain object and ensure all fields are available
+    const pageData = page.toObject();
+    
+    // Ensure design object exists with default values
+    pageData.design = {
+      backgroundColor: pageData.design?.backgroundColor || '#000000',
+      textColor: pageData.design?.textColor || '#ffffff',
+      fontFamily: pageData.design?.fontFamily || 'Inter',
+      layout: pageData.design?.layout || 'centered',
+      logo: pageData.design?.logo || '',
+      maxWidth: pageData.design?.maxWidth || 768,
+      logoSize: {
+        width: pageData.design?.logoSize?.width || 200,
+        height: pageData.design?.logoSize?.height || 50
+      },
+      customCSS: pageData.design?.customCSS || ''
+    };
+
+    // Ensure content exists
+    pageData.content = pageData.content || '';
+
+    res.render('page-editor', { 
+      page: pageData,
       user: req.user,
       active: 'pages'
     });
@@ -135,7 +182,7 @@ router.get('/:id/edit', isAuthenticated, async (req, res) => {
 // Update page
 router.put('/:id', isAuthenticated, async (req, res) => {
   try {
-    const { title, description, content, status, design, isPublished } = req.body;
+    const { title, description, content, status, design, publishType, scheduledFor } = req.body;
 
     const page = await Page.findOne({ _id: req.params.id, user: req.user._id });
     if (!page) {
@@ -148,13 +195,19 @@ router.put('/:id', isAuthenticated, async (req, res) => {
     page.description = description;
     page.content = content;
     
-    // Handle status and publish state
-    if (isPublished === 'on') {
+    // Handle status and scheduling
+    if (publishType === 'schedule' && scheduledFor) {
+      page.status = 'scheduled';
+      page.scheduledFor = new Date(scheduledFor);
+    } else if (publishType === 'now') {
       page.status = 'published';
+      page.scheduledFor = null;
     } else if (status === 'archived') {
       page.status = 'archived';
+      page.scheduledFor = null;
     } else {
       page.status = 'draft';
+      page.scheduledFor = null;
     }
 
     // Ensure slug exists

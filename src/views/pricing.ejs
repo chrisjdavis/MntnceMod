@@ -25,13 +25,13 @@ title = 'Pricing';
                             <% } %>
                         </h3>
                         
-                        <p class="mt-6 flex items-baseline gap-x-1">
+                        <p class="mt-2 flex items-baseline gap-x-1">
                             <span class="text-4xl font-bold tracking-tight text-gray-900 dark:text-white">$<%= plan.price %></span>
                             <span class="text-sm font-semibold leading-6 text-gray-600 dark:text-gray-400">/<%= plan.interval %></span>
                         </p>
                         <% if (user) { %>
                             <% if (plan.code === currentPlanCode) { %>
-                                <div class="mt-8 block w-full bg-[#6B3BFA] text-white rounded-md py-2 text-sm font-semibold text-center">
+                                <div class="mt-4 block w-full bg-[#6B3BFA] text-white rounded-md py-2 text-sm font-semibold text-center">
                                     Current Plan
                                 </div>
                             <% } else { %>
@@ -39,7 +39,7 @@ title = 'Pricing';
                                     const currentPlan = plans.find(p => p.code === currentPlanCode);
                                     const isDowngrade = plan.price < currentPlan.price;
                                 %>
-                                <form action="/settings/subscription/confirm" method="POST" class="mt-8">
+                                <form action="/settings/subscription/confirm" method="POST" class="mt-4">
                                     <input type="hidden" name="plan" value="<%= plan.code %>">
                                     <input type="hidden" name="action" value="<%= isDowngrade ? 'downgrade' : 'upgrade' %>">
                                     <button type="submit"
@@ -50,12 +50,12 @@ title = 'Pricing';
                             <% } %>
                         <% } else { %>
                             <a href="/register"
-                                class="mt-8 block w-full <%= plan.code === 'pro' ? 'bg-neon-blue text-black hover:bg-blue-400' : 'bg-dark-700 text-white hover:bg-dark-600' %> border border-transparent rounded-md py-2 text-sm font-semibold text-center">
+                                class="mt-4 block w-full <%= plan.code === 'pro' ? 'bg-neon-blue text-black hover:bg-blue-400' : 'bg-dark-700 text-white hover:bg-dark-600' %> border border-transparent rounded-md py-2 text-sm font-semibold text-center">
                                 <%= plan.code === 'enterprise' ? 'Contact sales' : 'Get started' %>
                             </a>
                         <% } %>
 
-                        <div class="mt-8 pt-8 border-t-2 <%= plan.code === currentPlanCode ? 'border-purple-500' : 'border-[#a855f7] dark:border-[#a855f7]' %>">
+                        <div class="mt-1 pt-8 border-t-2 <%= plan.code === currentPlanCode ? 'border-purple-500' : 'border-[#a855f7] dark:border-[#a855f7]' %>">
                             <h4 class="text-sm font-semibold text-gray-900 dark:text-white tracking-wide uppercase">What's included</h4>
                             <ul role="list" class="mt-6 space-y-4">
                                 <% plan.features.forEach(feature => { %>

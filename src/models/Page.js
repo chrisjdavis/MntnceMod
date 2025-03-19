@@ -22,8 +22,11 @@ const pageSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['draft', 'published', 'archived'],
+    enum: ['draft', 'published', 'archived', 'scheduled'],
     default: 'draft'
+  },
+  scheduledFor: {
+    type: Date
   },
   design: {
     type: Object,
@@ -60,6 +63,18 @@ const pageSchema = new mongoose.Schema({
 // Update the updatedAt timestamp before saving
 pageSchema.pre('save', function(next) {
   this.updatedAt = Date.now();
+  
+  // Check if the page is scheduled and update status accordingly
+  if (this.scheduledFor) {
+    const now = new Date();
+    if (this.scheduledFor <= now) {
+      this.status = 'published';
+      this.scheduledFor = null;
+    } else {
+      this.status = 'scheduled';
+    }
+  }
+  
   next();
 });
 

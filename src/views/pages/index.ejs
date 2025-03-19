@@ -110,8 +110,14 @@ title = 'My Pages';
                     <%= page.status === 'operational' ? 'bg-green-900/50 text-green-400' : 
                        page.status === 'degraded' ? 'bg-yellow-900/50 text-yellow-400' :
                        page.status === 'down' ? 'bg-red-900/50 text-red-400' :
+                       page.status === 'scheduled' ? 'bg-purple-900/50 text-purple-400' :
                        'bg-blue-900/50 text-blue-400' %>">
                     <%= page.status %>
+                    <% if (page.status === 'scheduled' && page.scheduledFor) { %>
+                      <span class="ml-1 text-xs opacity-75">
+                        (<%= new Date(page.scheduledFor).toLocaleString() %>)
+                      </span>
+                    <% } %>
                   </span>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
