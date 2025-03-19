@@ -9,8 +9,7 @@ router.get('/login', (req, res) => {
     res.render('auth/login', {
         title: 'Login',
         user: req.user,
-        layout: 'layouts/default',
-        error: req.flash('error')
+        layout: 'layouts/default'
     });
 });
 

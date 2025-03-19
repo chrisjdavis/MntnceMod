@@ -4,6 +4,8 @@ title = 'Subscription Plans';
 
 <%- contentFor('body') %>
 
+<%- include('../partials/messages') %>
+
 <div class="min-h-screen bg-gray-100 dark:bg-gray-900 rounded-2xl">
   <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
     <!-- Page Header -->
@@ -13,18 +15,6 @@ title = 'Subscription Plans';
     </div>
 
     <%- include('partials/tabs') %>
-
-    <% if (typeof messages.success_msg !== 'undefined' && messages.success_msg.length > 0) { %>
-      <div class="bg-green-900/50 text-green-400 p-4 rounded-lg mb-6">
-        <%= messages.success_msg %>
-      </div>
-    <% } %>
-
-    <% if (typeof messages.error_msg !== 'undefined' && messages.error_msg.length > 0) { %>
-      <div class="bg-red-900/50 text-red-400 p-4 rounded-lg mb-6">
-        <%= messages.error_msg %>
-      </div>
-    <% } %>
 
     <div class="mt-8">
       <div class="bg-white dark:bg-gray-800 shadow rounded-lg">

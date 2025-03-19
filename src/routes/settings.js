@@ -12,8 +12,6 @@ const QRCode = require('qrcode');
 // GET /settings - Show settings page
 router.get('/', isAuthenticated, (req, res) => {
   res.locals.title = 'Profile Settings';
-  const success = req.flash('success');
-  const error = req.flash('error');
   
   const renderData = {
     user: req.user,
@@ -21,17 +19,6 @@ router.get('/', isAuthenticated, (req, res) => {
     title: 'Profile Settings',
     path: '/settings'
   };
-
-  // Only include messages if they have actual content
-  if (success && success.length > 0) {
-    renderData.messages = { success };
-  }
-  if (error && error.length > 0) {
-    renderData.messages = {
-      ...renderData.messages,
-      error
-    };
-  }
   
   res.render('settings/profile', renderData);
 });
@@ -39,8 +26,6 @@ router.get('/', isAuthenticated, (req, res) => {
 // GET /settings/notifications - Show notifications settings page
 router.get('/notifications', isAuthenticated, (req, res) => {
   res.locals.title = 'Notification Settings';
-  const success = req.flash('success');
-  const error = req.flash('error');
   
   const renderData = {
     user: req.user,
@@ -48,17 +33,6 @@ router.get('/notifications', isAuthenticated, (req, res) => {
     title: 'Notification Settings',
     path: '/settings/notifications'
   };
-
-  // Only include messages if they have actual content
-  if (success && success.length > 0) {
-    renderData.messages = { success };
-  }
-  if (error && error.length > 0) {
-    renderData.messages = {
-      ...renderData.messages,
-      error
-    };
-  }
   
   res.render('settings/notifications', renderData);
 });
@@ -127,9 +101,6 @@ router.get('/subscription', isAuthenticated, async (req, res) => {
     const currentPlan = await req.user.getPlanDetails();
     const plans = await SubscriptionPlan.find({ isActive: true }).sort({ price: 1 });
     const pageCount = await MaintenancePage.countDocuments({ user: req.user._id });
-
-    const success = req.flash('success');
-    const error = req.flash('error');
     
     const renderData = {
       user: req.user,
@@ -140,17 +111,6 @@ router.get('/subscription', isAuthenticated, async (req, res) => {
       title: 'Subscription Settings',
       path: '/settings/subscription'
     };
-
-    // Only include messages if they have actual content
-    if (success && success.length > 0) {
-      renderData.messages = { success };
-    }
-    if (error && error.length > 0) {
-      renderData.messages = {
-        ...renderData.messages,
-        error
-      };
-    }
 
     res.locals.title = 'Subscription Settings';
     res.render('settings/subscription', renderData);
@@ -254,8 +214,6 @@ router.get('/security', isAuthenticated, async (req, res) => {
       .limit(10);
 
     res.locals.title = 'Security Settings';
-    const success = req.flash('success');
-    const error = req.flash('error');
     
     const renderData = {
       user: req.user,
@@ -264,17 +222,6 @@ router.get('/security', isAuthenticated, async (req, res) => {
       path: '/settings/security',
       loginHistory
     };
-
-    // Only include messages if they have actual content
-    if (success && success.length > 0) {
-      renderData.messages = { success };
-    }
-    if (error && error.length > 0) {
-      renderData.messages = {
-        ...renderData.messages,
-        error
-      };
-    }
     
     res.render('settings/security', renderData);
   } catch (error) {

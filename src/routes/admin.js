@@ -159,11 +159,7 @@ router.get('/dashboard', isAdmin, async (req, res) => {
       stats,
       recentActivity,
       path: '/admin',
-      user: req.user,
-      messages: {
-        success_msg: req.flash('success_msg'),
-        error_msg: req.flash('error_msg')
-      }
+      user: req.user
     };
 
     res.render('admin/dashboard', renderData);
@@ -182,11 +178,7 @@ router.get('/users', isAdmin, async (req, res) => {
     res.render('admin/users', { 
       users, 
       path: '/admin/users',
-      user: req.user,
-      messages: {
-        success_msg: req.flash('success_msg'),
-        error_msg: req.flash('error_msg')
-      }
+      user: req.user
     });
   } catch (error) {
     console.error('Error loading users:', error);
@@ -203,15 +195,11 @@ router.get('/users/new', isAdmin, async (req, res) => {
       user: req.user,
       currentUser: req.user,
       active: 'admin',
-      path: '/admin/users',
-      messages: {
-        success_msg: req.flash('success_msg'),
-        error_msg: req.flash('error_msg')
-      }
+      path: '/admin/users'
     });
   } catch (error) {
     console.error('New User Form Error:', error);
-    req.flash('error_msg', 'Error loading new user form');
+    req.flash('error', 'Error loading new user form');
     res.redirect('/admin/users');
   }
 });
@@ -252,7 +240,7 @@ router.get('/users/:id/edit', isAdmin, async (req, res) => {
   try {
     const editUser = await User.findById(req.params.id);
     if (!editUser) {
-      req.flash('error_msg', 'User not found');
+      req.flash('error', 'User not found');
       return res.redirect('/admin/users');
     }
     res.render('admin/user-form', { 
@@ -260,15 +248,11 @@ router.get('/users/:id/edit', isAdmin, async (req, res) => {
       user: req.user,
       currentUser: req.user,
       active: 'admin',
-      path: '/admin/users',
-      messages: {
-        success_msg: req.flash('success_msg'),
-        error_msg: req.flash('error_msg')
-      }
+      path: '/admin/users'
     });
   } catch (error) {
     console.error('Edit User Error:', error);
-    req.flash('error_msg', 'Error loading user');
+    req.flash('error', 'Error loading user');
     res.redirect('/admin/users');
   }
 });
@@ -349,11 +333,7 @@ router.get('/settings', isAdmin, async (req, res) => {
     res.render('admin/settings', { 
       settings, 
       path: '/admin/settings',
-      user: req.user,
-      messages: {
-        success_msg: req.flash('success_msg'),
-        error_msg: req.flash('error_msg')
-      }
+      user: req.user
     });
   } catch (error) {
     console.error('Error loading settings:', error);
@@ -439,15 +419,11 @@ router.get('/analytics', isAdmin, async (req, res) => {
     res.render('admin/analytics', {
       analytics,
       path: '/admin/analytics',
-      user: req.user,
-      messages: {
-        success_msg: req.flash('success_msg'),
-        error_msg: req.flash('error_msg')
-      }
+      user: req.user
     });
   } catch (error) {
     console.error('Error loading analytics:', error);
-    req.flash('error_msg', 'Error loading analytics data');
+    req.flash('error', 'Error loading analytics data');
     res.redirect('/admin/dashboard');
   }
 });
@@ -462,11 +438,7 @@ router.get('/logs', isAdmin, async (req, res) => {
     res.render('admin/logs', { 
       logs, 
       path: '/admin/logs',
-      user: req.user,
-      messages: {
-        success_msg: req.flash('success_msg'),
-        error_msg: req.flash('error_msg')
-      }
+      user: req.user
     });
   } catch (error) {
     console.error('Error loading logs:', error);
@@ -483,15 +455,11 @@ router.get('/plans', isAdmin, async (req, res) => {
       plans,
       user: req.user,
       active: 'admin',
-      path: '/admin/plans',
-      messages: {
-        success_msg: req.flash('success_msg'),
-        error_msg: req.flash('error_msg')
-      }
+      path: '/admin/plans'
     });
   } catch (error) {
     console.error('Error loading subscription plans:', error);
-    req.flash('error_msg', 'Error loading subscription plans');
+    req.flash('error', 'Error loading subscription plans');
     res.redirect('/admin/dashboard');
   }
 });
@@ -502,15 +470,11 @@ router.get('/plans/new', isAdmin, async (req, res) => {
     res.render('admin/plan-form', { 
       plan: null,
       user: req.user,
-      active: 'admin',
-      messages: {
-        success_msg: req.flash('success_msg'),
-        error_msg: req.flash('error_msg')
-      }
+      active: 'admin'
     });
   } catch (error) {
     console.error('Error loading plan form:', error);
-    req.flash('error_msg', 'Error loading plan form');
+    req.flash('error', 'Error loading plan form');
     res.redirect('/admin/plans');
   }
 });
@@ -520,21 +484,17 @@ router.get('/plans/:id/edit', isAdmin, async (req, res) => {
   try {
     const plan = await SubscriptionPlan.findById(req.params.id);
     if (!plan) {
-      req.flash('error_msg', 'Subscription plan not found');
+      req.flash('error', 'Subscription plan not found');
       return res.redirect('/admin/plans');
     }
     res.render('admin/plan-form', { 
       plan,
       user: req.user,
-      active: 'admin',
-      messages: {
-        success_msg: req.flash('success_msg'),
-        error_msg: req.flash('error_msg')
-      }
+      active: 'admin'
     });
   } catch (error) {
     console.error('Error loading plan:', error);
-    req.flash('error_msg', 'Error loading plan');
+    req.flash('error', 'Error loading plan');
     res.redirect('/admin/plans');
   }
 });

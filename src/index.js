@@ -64,9 +64,17 @@ require('./config/passport');
 
 // Global variables middleware
 app.use((req, res, next) => {
-  res.locals.success_msg = req.flash('success_msg');
-  res.locals.error_msg = req.flash('error_msg');
-  res.locals.error = req.flash('error');
+  const success = req.flash('success') || req.flash('success_msg');
+  const error = req.flash('error') || req.flash('error_msg');
+  
+  res.locals.messages = {};
+  if (success && success.length > 0) {
+    res.locals.messages.success = success;
+  }
+  if (error && error.length > 0) {
+    res.locals.messages.error = error;
+  }
+  
   res.locals.user = req.user;
   next();
 });
