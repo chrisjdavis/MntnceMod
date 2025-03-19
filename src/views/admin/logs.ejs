@@ -1,0 +1,52 @@
+<%
+title = 'System Logs';
+%>
+
+<%- contentFor('body') %>
+<div class="min-h-screen bg-gray-100 dark:bg-gray-900">
+  <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+    <!-- Page Header -->
+    <div class="px-4 py-5 sm:px-0">
+      <h1 class="text-3xl font-bold text-gray-900 dark:text-white">System Logs</h1>
+      <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">View system activity and events</p>
+    </div>
+
+    <%- include('partials/tabs') %>
+
+    <!-- Logs Timeline -->
+    <div class="mt-8">
+      <div class="bg-white dark:bg-gray-800 shadow rounded-lg">
+        <div class="px-4 py-5 sm:p-6">
+          <div class="flow-root">
+            <ul class="-mb-8">
+              <% logs.forEach((log, index) => { %>
+                <li>
+                  <div class="relative pb-8">
+                    <% if (index !== logs.length - 1) { %>
+                      <span class="absolute top-4 left-4 -ml-px h-full w-0.5 bg-gray-200 dark:bg-gray-700" aria-hidden="true"></span>
+                    <% } %>
+                    <div class="relative flex space-x-3">
+                      <div>
+                        <span class="h-8 w-8 rounded-full bg-neon-blue flex items-center justify-center ring-8 ring-white dark:ring-gray-800">
+                          <svg class="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                          </svg>
+                        </span>
+                      </div>
+                      <div class="min-w-0 flex-1 pt-1.5 flex justify-between space-x-4">
+                        <div>
+                          <p class="text-sm text-gray-500 dark:text-gray-400"><%= log.description %></p>
+                          <p class="text-xs text-gray-400 dark:text-gray-500"><%= log.timestamp %></p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+              <% }); %>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div> 

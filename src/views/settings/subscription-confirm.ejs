@@ -1,0 +1,113 @@
+<%
+title = 'Confirm Subscription Change';
+%>
+
+<%- contentFor('body') %>
+<div class="min-h-screen bg-gray-100 dark:bg-gray-900">
+  <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+    <!-- Page Header -->
+    <div class="px-4 py-5 sm:px-0">
+      <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Confirm Subscription Change</h1>
+      <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Please review your subscription change before confirming</p>
+    </div>
+
+    <%- include('../partials/tabs') %>
+
+    <div class="mt-8">
+      <div class="bg-dark-800 rounded-lg shadow-md p-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+          <div>
+            <h2 class="text-xl font-semibold text-white mb-4">Current Plan</h2>
+            <div class="bg-dark-700 rounded-lg p-4 h-full">
+              <h3 class="text-lg font-medium text-white mb-2"><%= currentPlan.name %></h3>
+              <p class="text-gray-400 text-sm mb-2"><%= currentPlan.description %></p>
+              <div class="mb-2">
+                <p class="text-2xl font-bold text-white">$<%= currentPlan.price %></p>
+                <p class="text-sm text-gray-400">per <%= currentPlan.interval %></p>
+              </div>
+              <ul class="space-y-2">
+                <% currentPlan.features.forEach(feature => { %>
+                  <li class="flex items-center text-sm text-gray-300">
+                    <svg class="h-4 w-4 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                    <%= feature %>
+                  </li>
+                <% }); %>
+              </ul>
+            </div>
+          </div>
+
+          <div>
+            <h2 class="text-xl font-semibold text-white mb-4">New Plan</h2>
+            <div class="bg-dark-700 rounded-lg p-4 ring-2 ring-green-500 h-full">
+              <h3 class="text-lg font-medium text-white mb-2"><%= newPlan.name %></h3>
+              <p class="text-gray-400 text-sm mb-2"><%= newPlan.description %></p>
+              <div class="mb-2">
+                <p class="text-2xl font-bold text-white">$<%= newPlan.price %></p>
+                <p class="text-sm text-gray-400">per <%= newPlan.interval %></p>
+              </div>
+              <ul class="space-y-2">
+                <% newPlan.features.forEach(feature => { %>
+                  <li class="flex items-center text-sm text-gray-300">
+                    <svg class="h-4 w-4 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                    <%= feature %>
+                  </li>
+                <% }); %>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-20 mb-6">
+          <h2 class="text-xl font-semibold text-white mb-4">Changes Summary</h2>
+          <div class="bg-dark-700 rounded-lg p-4">
+            <ul class="space-y-2">
+              <% if (newPlan.price > currentPlan.price) { %>
+                <li class="flex items-center text-sm text-yellow-400">
+                  <svg class="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                  </svg>
+                  Your subscription will be upgraded to <%= newPlan.name %> at $<%= newPlan.price %>/<%= newPlan.interval %>
+                </li>
+              <% } else if (newPlan.price < currentPlan.price) { %>
+                <li class="flex items-center text-sm text-green-400">
+                  <svg class="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                  </svg>
+                  Your subscription will be downgraded to <%= newPlan.name %> at $<%= newPlan.price %>/<%= newPlan.interval %>
+                </li>
+              <% } %>
+              <li class="flex items-center text-sm text-gray-300">
+                <svg class="h-4 w-4 text-blue-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                Page limit: <%= currentPlan.limits.pages %> → <%= newPlan.limits.pages %>
+              </li>
+              <li class="flex items-center text-sm text-gray-300">
+                <svg class="h-4 w-4 text-blue-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                Views per page: <%= currentPlan.limits.viewsPerPage.toLocaleString() %> → <%= newPlan.limits.viewsPerPage.toLocaleString() %>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="flex justify-end space-x-4">
+          <a href="/settings/subscription" class="px-4 py-2 text-gray-300 hover:text-white">
+            Cancel
+          </a>
+          <form action="/settings/subscription/change-plan" method="POST">
+            <input type="hidden" name="planCode" value="<%= newPlan.code %>">
+            <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+              Confirm Change
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div> 

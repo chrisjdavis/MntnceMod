@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= page.title %></title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto:wght@400;500;700&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: '<%= page.design?.fontFamily || 'Inter' %>', sans-serif;
+      background-color: <%= page.design?.backgroundColor || '#000000' %>;
+      color: <%= page.design?.textColor || '#ffffff' %>;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: top;
+    }
+
+    .container {
+      max-width: <%= page.design?.maxWidth || 768 %>px;
+      width: 100%;
+      box-sizing: border-box;
+      text-align: <%= page.design?.layout === 'left-aligned' ? 'left' : page.design?.layout === 'right-aligned' ? 'right' : 'center' %>;
+    }
+
+    .logo {
+      margin-bottom: 2rem;
+      max-width: <%= page.design?.logoSize?.width || 200 %>px;
+      height: auto;
+    }
+
+    .status {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      text-transform: capitalize;
+    }
+
+    .status.operational { color: #10B981; }
+    .status.maintenance { color: #F59E0B; }
+    .status.degraded { color: #F59E0B; }
+    .status.down { color: #EF4444; }
+
+    .title {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+    }
+
+    .description {
+      font-size: 1.25rem;
+      margin-bottom: 2rem;
+      opacity: 0.9;
+    }
+
+    .content {
+      font-size: 1.125rem;
+      line-height: 1.6;
+      margin-bottom: 2rem;
+      white-space: pre-wrap;
+    }
+
+    .message {
+      font-size: 1.25rem;
+      font-weight: 500;
+      margin-top: 2rem;
+      padding: 1rem;
+      border-radius: 0.5rem;
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    <%= page.design?.customCSS || '' %>
+  </style>
+</head>
+<body>
+  <div class="container">
+    <% if (page.design?.logo) { %>
+      <img src="<%= page.design.logo %>" alt="Logo" class="logo">
+    <% } %>
+
+    <h1 class="title"><%= page.title %></h1>
+
+    <% if (page.content) { %>
+      <div class="content"><%= page.content %></div>
+    <% } %>
+
+    <% if (page.message) { %>
+      <div class="message"><%= page.message %></div>
+    <% } %>
+
+    <div class="mt-8 pt-6 border-t opacity-60 text-sm">
+      <em>Last updated: <%= new Date(page.updatedAt).toLocaleDateString() %></em>
+    </div>
+  </div>
+
+  <script>
+    // Track page view
+    fetch('/api/pages/<%= page._id %>/view', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      credentials: 'include' // Include cookies in the request
+    }).catch(console.error);
+  </script>
+</body>
+</html> 

@@ -1,0 +1,82 @@
+<%
+title = 'Profile Settings';
+%>
+<%- contentFor('body') %>
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <div class="md:flex md:items-center md:justify-between">
+    <div class="px-4 py-5 sm:px-0">
+      <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Profile Settings</h1>
+      <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Update your personal information and how others see you on the platform.</p>
+    </div>
+  </div>
+
+  <%- include('../partials/messages') %>
+
+  <%- include('../partials/tabs') %>
+
+  <div id="profile-tab" class="tab-content bg-gray-50 dark:bg-gray-800 shadow rounded-lg p-6">
+    <form action="/settings" method="POST" class="space-y-6 divide-y divide-gray-200 dark:divide-gray-700">
+      <div class="space-y-6">
+        <div class="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
+          <div class="sm:col-span-4">
+            <label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Name</label>
+            <div class="mt-1">
+              <input type="text" name="name" id="name" value="<%= user.name %>" required
+                class="shadow-sm focus:ring-neon-blue focus:border-neon-blue block w-full sm:text-sm border-gray-300 dark:border-gray-600 rounded-md dark:bg-gray-700 p-4 dark:text-white">
+            </div>
+          </div>
+
+          <div class="sm:col-span-4">
+            <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Email</label>
+            <div class="mt-1">
+              <input type="email" name="email" id="email" value="<%= user.email %>" required
+                class="shadow-sm focus:ring-neon-blue focus:border-neon-blue block w-full sm:text-sm border-gray-300 dark:border-gray-600 rounded-md dark:bg-gray-700 p-4 dark:text-white"> 
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="pt-6">
+        <div>
+          <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-white">Change Password</h3>
+          <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Update your password to keep your account secure.</p>
+        </div>
+
+        <div class="mt-6 grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
+          <div class="sm:col-span-4">
+            <label for="currentPassword" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Current Password</label>
+            <div class="mt-1">
+              <input type="password" name="currentPassword" id="currentPassword"
+                class="shadow-sm focus:ring-neon-blue focus:border-neon-blue block w-full sm:text-sm border-gray-300 dark:border-gray-600 rounded-md dark:bg-gray-700 p-4 dark:text-white">
+            </div>
+          </div>
+
+          <div class="sm:col-span-4">
+            <label for="newPassword" class="block text-sm font-medium text-gray-700 dark:text-gray-300">New Password</label>
+            <div class="mt-1">
+              <input type="password" name="newPassword" id="newPassword"
+                class="shadow-sm focus:ring-neon-blue focus:border-neon-blue block w-full sm:text-sm border-gray-300 dark:border-gray-600 rounded-md dark:bg-gray-700 p-4 dark:text-white">
+            </div>
+          </div>
+
+          <div class="sm:col-span-4">
+            <label for="confirmPassword" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Confirm New Password</label>
+            <div class="mt-1">
+              <input type="password" name="confirmPassword" id="confirmPassword"
+                class="shadow-sm focus:ring-neon-blue focus:border-neon-blue block w-full sm:text-sm border-gray-300 dark:border-gray-600 rounded-md dark:bg-gray-700 p-4 dark:text-white">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="pt-6">
+        <div class="flex justify-end">
+          <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-700 dark:focus:ring-offset-gray-800">
+            Save Changes
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+  </div>

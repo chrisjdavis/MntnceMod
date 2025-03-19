@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en" class="<%= locals.user && locals.user.theme === 'dark' ? 'dark' : '' %>">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%- typeof title !== 'undefined' ? title + ' - ' : '' %><%= locals.settings?.siteName || 'StatusSaaS' %></title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@100..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/styles.css">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter var', 'sans-serif'],
+                        mono: ['Geist Mono', 'monospace'],
+                    },
+                    colors: {
+                        dark: {
+                            50: '#f8fafc',
+                            100: '#f1f5f9',
+                            200: '#e2e8f0',
+                            300: '#cbd5e1',
+                            400: '#94a3b8',
+                            500: '#64748b',
+                            600: '#475569',
+                            700: '#334155',
+                            800: '#1e293b',
+                            900: '#0f172a',
+                        },
+                        neon: {
+                            blue: '#00f2ff',
+                            purple: '#7c3aed',
+                            pink: '#ff2d55',
+                            green: '#00ff9d',
+                        },
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.3s ease-out forwards',
+                        'slide-up': 'slideUp 0.3s ease-out forwards',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        },
+                        slideUp: {
+                            '0%': { transform: 'translateY(10px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' },
+                        },
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        body {
+            @apply bg-gray-100 text-gray-900 dark:bg-gray-900 dark:text-white;
+        }
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Inter var', sans-serif;
+        }
+    </style>
+    <%- defineContent('styles') %>
+</head>
+<body class="min-h-screen bg-gray-100 dark:bg-gray-900">
+    <!-- Navigation -->
+    <nav class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50 backdrop-blur-sm bg-white/80 dark:bg-gray-800/80">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex">
+                    <div class="flex-shrink-0 flex items-center">
+                        <a href="/" class="text-2xl font-semibold text-gray-900 dark:text-white pr-4 font-sans"><%= locals.settings?.siteName || 'StatusSaaS' %></a>
+                    </div>
+                    <div class="hidden items-center sm:ml-6 sm:flex sm:space-x-12">
+                        <a href="/dashboard" class="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-700 dark:text-white hover:text-gray-900 dark:hover:text-white transition-colors duration-200 <%= typeof active !== 'undefined' && active === 'dashboard' ? 'border-b-2 border-neon-blue' : '' %>">
+                            Dashboard
+                        </a>
+                        <a href="/pages" class="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-700 dark:text-white hover:text-gray-900 dark:hover:text-white transition-colors duration-200 <%= typeof active !== 'undefined' && active === 'pages' ? 'border-b-2 border-neon-blue' : '' %>">
+                            Pages
+                        </a>
+                    </div>
+                </div>
+                <div class="hidden sm:ml-6 sm:flex sm:items-center">
+                    <% if (typeof user !== 'undefined' && user) { %>
+                        <div class="ml-3 relative">
+                            <div>
+                                <button type="button" class="flex text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neon-blue" id="user-menu-button" aria-expanded="false" aria-haspopup="true">
+                                    <span class="sr-only">Open user menu</span>
+                                    <div class="h-8 w-8 rounded-full bg-neon-blue/10 flex items-center justify-center text-neon-blue">
+                                        <%= user.name ? user.name.charAt(0).toUpperCase() : user.email.charAt(0).toUpperCase() %>
+                                    </div>
+                                </button>
+                            </div>
+                            <div class="hidden origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button" tabindex="-1" id="user-menu-items">
+                                <div class="px-4 py-2 text-sm text-gray-600 dark:text-gray-300 border-b border-gray-200 dark:border-gray-700">
+                                    <%= user.email %>
+                                </div>
+                                <a href="/settings" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700" role="menuitem">Settings</a>
+                                <% if (typeof user !== 'undefined' && user.role === 'admin') { %>
+                                    <a href="/admin/dashboard" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700" role="menuitem">Admin Dashboard</a>
+                                <% } %>
+                                <form action="/auth/logout" method="POST">
+                                    <button type="submit" class="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700" role="menuitem">Logout</button>
+                                </form>
+                            </div>
+                        </div>
+                    <% } else { %>
+                        <div class="flex items-center space-x-12">
+                            <a href="/auth/login" class="nav-link">
+                                Login
+                            </a>
+                            <a href="/auth/register" class="btn btn-primary">
+                                Sign up
+                            </a>
+                        </div>
+                    <% } %>
+                </div>
+                <!-- Mobile menu button -->
+                <div class="flex items-center sm:hidden">
+                    <button type="button" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-dark-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-neon-blue" aria-controls="mobile-menu" aria-expanded="false">
+                        <span class="sr-only">Open main menu</span>
+                        <svg class="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile menu -->
+        <div class="sm:hidden" id="mobile-menu">
+            <div class="pt-2 pb-3 space-y-1">
+                <a href="/dashboard" class="block pl-3 pr-4 py-2 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+                    Dashboard
+                </a>
+                <a href="/pages" class="block pl-3 pr-4 py-2 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+                    Pages
+                </a>
+                <% if (typeof user !== 'undefined' && user.role === 'admin') { %>
+                    <a href="/admin/dashboard" class="block pl-3 pr-4 py-2 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+                        Admin
+                    </a>
+                <% } %>
+                <% if (typeof user !== 'undefined' && user) { %>
+                    <div class="px-3 py-2 text-base font-medium text-gray-600 dark:text-gray-400">
+                        <%= user.email %>
+                    </div>
+                    <a href="/settings" class="block pl-3 pr-4 py-2 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+                        Settings
+                    </a>
+                    <form action="/auth/logout" method="POST">
+                        <button type="submit" class="block w-full text-left pl-3 pr-4 py-2 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+                            Logout
+                        </button>
+                    </form>
+                <% } else { %>
+                    <a href="/auth/login" class="block pl-3 pr-4 py-2 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+                        Login
+                    </a>
+                    <a href="/auth/register" class="block pl-3 pr-4 py-2 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+                        Sign up
+                    </a>
+                <% } %>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main content -->
+    <main class="animate-fade-in">
+        <%- body %>
+    </main>
+
+    <!-- Footer -->
+    <footer class="mt-6">
+        <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+            <div class="text-center text-sm text-gray-400">
+                <p>&copy; <%= new Date().getFullYear() %> <%= locals.settings?.siteName || 'StatusSaaS' %>. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile menu toggle
+        document.querySelector('button[aria-controls="mobile-menu"]').addEventListener('click', function() {
+            const mobileMenu = document.getElementById('mobile-menu');
+            const isExpanded = this.getAttribute('aria-expanded') === 'true';
+            this.setAttribute('aria-expanded', !isExpanded);
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // User menu toggle
+        const userMenuButton = document.getElementById('user-menu-button');
+        const userMenuItems = document.getElementById('user-menu-items');
+        
+        if (userMenuButton && userMenuItems) {
+            userMenuButton.addEventListener('click', function() {
+                const isExpanded = this.getAttribute('aria-expanded') === 'true';
+                this.setAttribute('aria-expanded', !isExpanded);
+                userMenuItems.classList.toggle('hidden');
+            });
+
+            // Close the menu when clicking outside
+            document.addEventListener('click', function(event) {
+                if (!userMenuButton.contains(event.target) && !userMenuItems.contains(event.target)) {
+                    userMenuButton.setAttribute('aria-expanded', 'false');
+                    userMenuItems.classList.add('hidden');
+                }
+            });
+        }
+    </script>
+    <%- defineContent('scripts') %>
+</body>
+</html> 

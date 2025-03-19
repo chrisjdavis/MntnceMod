@@ -1,0 +1,113 @@
+<%- contentFor('title', editUser ? 'Edit User' : 'Create User') %>
+
+<%- contentFor('body') %>
+<div class="min-h-screen bg-gray-100 dark:bg-gray-900">
+  <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+    <!-- Page Header -->
+    <div class="px-4 py-5 sm:px-0">
+      <h1 class="text-3xl font-bold text-gray-900 dark:text-white"><%= editUser ? 'Edit User' : 'Create User' %></h1>
+      <p class="mt-1 text-sm text-gray-500 dark:text-gray-400"><%= editUser ? 'Update user information and permissions' : 'Create a new user account' %></p>
+    </div>
+
+    <%- include('partials/tabs') %>
+
+    <% if (typeof messages !== 'undefined' && messages.error_msg && messages.error_msg.length > 0) { %>
+      <div class="mt-4 bg-red-900/50 text-red-400 p-4 rounded-lg">
+        <%= messages.error_msg %>
+      </div>
+    <% } %>
+
+    <% if (typeof messages !== 'undefined' && messages.success_msg && messages.success_msg.length > 0) { %>
+      <div class="mt-4 bg-green-900/50 text-green-400 p-4 rounded-lg">
+        <%= messages.success_msg %>
+      </div>
+    <% } %>
+
+    <!-- User Form -->
+    <div class="mt-8">
+      <div class="bg-white dark:bg-gray-800 shadow rounded-lg">
+        <form action="<%= editUser ? `/admin/users/${editUser._id}?_method=PUT` : '/admin/users' %>" method="POST" class="space-y-6 p-6">
+          <!-- Basic Information -->
+          <div>
+            <h3 class="text-lg font-medium leading-6 text-gray-900 dark:text-white">Basic Information</h3>
+            <div class="mt-6 grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
+              <div class="sm:col-span-3">
+                <label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Name</label>
+                <div class="mt-1">
+                  <input type="text" name="name" id="name" required
+                    value="<%= editUser ? editUser.name : '' %>"
+                    class="shadow-sm focus:ring-neon-blue focus:border-neon-blue block w-full sm:text-sm border-gray-300 dark:border-gray-600 rounded-md dark:bg-gray-700 dark:text-white p-4">
+                </div>
+              </div>
+
+              <div class="sm:col-span-3">
+                <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Email</label>
+                <div class="mt-1">
+                  <input type="email" name="email" id="email" required
+                    value="<%= editUser ? editUser.email : '' %>"
+                    class="shadow-sm focus:ring-neon-blue focus:border-neon-blue block w-full sm:text-sm border-gray-300 dark:border-gray-600 rounded-md dark:bg-gray-700 dark:text-white p-4">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Role and Status -->
+          <div>
+            <h3 class="text-lg font-medium leading-6 text-gray-900 dark:text-white">Role and Status</h3>
+            <div class="mt-6 grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
+              <div class="sm:col-span-3">
+                <label for="role" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Role</label>
+                <div class="mt-1">
+                  <select id="role" name="role" required
+                    class="shadow-sm focus:ring-neon-blue focus:border-neon-blue block w-full sm:text-sm border-gray-300 dark:border-gray-600 rounded-md dark:bg-gray-700 dark:text-white p-4">
+                    <option value="user" <%= editUser && editUser.role === 'user' ? 'selected' : '' %>>User</option>
+                    <option value="admin" <%= editUser && editUser.role === 'admin' ? 'selected' : '' %>>Admin</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="sm:col-span-3">
+                <label for="status" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Status</label>
+                <div class="mt-1">
+                  <select id="status" name="status" required
+                    class="shadow-sm focus:ring-neon-blue focus:border-neon-blue block w-full sm:text-sm border-gray-300 dark:border-gray-600 rounded-md dark:bg-gray-700 dark:text-white p-4">
+                    <option value="active" <%= editUser && editUser.status === 'active' ? 'selected' : '' %>>Active</option>
+                    <option value="inactive" <%= editUser && editUser.status === 'inactive' ? 'selected' : '' %>>Inactive</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <% if (!editUser) { %>
+            <!-- Password (only for new users) -->
+            <div>
+              <h3 class="text-lg font-medium leading-6 text-gray-900 dark:text-white">Password</h3>
+              <div class="mt-6 grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
+                <div class="sm:col-span-3">
+                  <label for="password" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Password</label>
+                  <div class="mt-1">
+                    <input type="password" name="password" id="password" required minlength="6"
+                      class="shadow-sm focus:ring-neon-blue focus:border-neon-blue block w-full sm:text-sm border-gray-300 dark:border-gray-600 rounded-md dark:bg-gray-700 dark:text-white p-4">
+                  </div>
+                </div>
+              </div>
+            </div>
+          <% } %>
+
+          <!-- Form Actions -->
+          <div class="flex justify-end space-x-3">
+            <a href="/admin/users"
+              class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 shadow-sm text-sm font-medium rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neon-blue">
+              Cancel
+            </a>
+            <button type="submit"
+              class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-black bg-neon-blue hover:bg-neon-blue/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neon-blue">
+              <%= editUser ? 'Save Changes' : 'Create User' %>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div> 

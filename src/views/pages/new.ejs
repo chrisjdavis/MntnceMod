@@ -1,0 +1,137 @@
+<%
+title = 'Create New Page';
+%>
+<%- contentFor('body') %>
+
+<div class="container mx-auto px-4 py-8">
+  <div class="max-w-3xl mx-auto">
+    <div class="flex justify-between items-center mb-8">
+      <h1 class="text-3xl font-bold text-white">Create New Page</h1>
+      <a href="/pages" class="text-blue-400 hover:text-blue-300">
+        Back to Pages
+      </a>
+    </div>
+
+    <form action="/pages" method="POST" class="bg-dark-800 rounded-lg shadow-md p-6">
+      <!-- Basic Information -->
+      <div class="mb-8">
+        <h2 class="text-xl font-semibold text-white mb-4">Basic Information</h2>
+        
+        <div class="mb-6">
+          <label for="title" class="block text-sm font-medium text-gray-400 mb-2">Page Title</label>
+          <input type="text" id="title" name="title" required
+            class="w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white">
+        </div>
+
+        <div class="mb-6">
+          <label for="description" class="block text-sm font-medium text-gray-400 mb-2">Description</label>
+          <textarea id="description" name="description" rows="3" required
+            class="w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"></textarea>
+        </div>
+
+        <div class="mb-6">
+          <label for="content" class="block text-sm font-medium text-gray-400 mb-2">Page Content</label>
+          <textarea id="content" name="content" rows="10" required
+            class="w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"></textarea>
+        </div>
+
+        <div class="mb-6">
+          <label for="status" class="block text-sm font-medium text-gray-400 mb-2">Status</label>
+          <select id="status" name="status" required
+            class="w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white">
+            <option value="operational">Operational</option>
+            <option value="maintenance">Maintenance</option>
+            <option value="degraded">Degraded</option>
+            <option value="down">Down</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Design Settings -->
+      <div class="mb-8">
+        <h2 class="text-xl font-semibold text-white mb-4">Design Settings</h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label for="backgroundColor" class="block text-sm font-medium text-gray-400 mb-2">Background Color</label>
+            <div class="flex items-center space-x-2">
+              <input type="color" id="backgroundColor" name="design[backgroundColor]" value="#000000"
+                class="h-10 w-10 p-1 rounded border border-dark-600">
+              <input type="text" data-color-input="backgroundColor" value="#000000"
+                class="flex-1 px-3 py-2 bg-dark-700 border border-dark-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white">
+            </div>
+          </div>
+
+          <div>
+            <label for="textColor" class="block text-sm font-medium text-gray-400 mb-2">Text Color</label>
+            <div class="flex items-center space-x-2">
+              <input type="color" id="textColor" name="design[textColor]" value="#ffffff"
+                class="h-10 w-10 p-1 rounded border border-dark-600">
+              <input type="text" data-color-input="textColor" value="#ffffff"
+                class="flex-1 px-3 py-2 bg-dark-700 border border-dark-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white">
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-6">
+          <label for="fontFamily" class="block text-sm font-medium text-gray-400 mb-2">Font Family</label>
+          <select id="fontFamily" name="design[fontFamily]"
+            class="w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white">
+            <option value="Inter">Inter</option>
+            <option value="Roboto">Roboto</option>
+            <option value="Open Sans">Open Sans</option>
+          </select>
+        </div>
+
+        <div class="mt-6">
+          <label for="layout" class="block text-sm font-medium text-gray-400 mb-2">Layout</label>
+          <select id="layout" name="design[layout]"
+            class="w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white">
+            <option value="centered">Centered</option>
+            <option value="left-aligned">Left Aligned</option>
+            <option value="right-aligned">Right Aligned</option>
+          </select>
+        </div>
+
+        <div class="mt-6">
+          <label for="logo" class="block text-sm font-medium text-gray-400 mb-2">Logo URL</label>
+          <input type="url" id="logo" name="design[logo]"
+            class="w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
+            placeholder="https://example.com/logo.png">
+          <p class="mt-1 text-sm text-gray-500">Optional. Recommended size: 200x50px</p>
+        </div>
+      </div>
+
+      <div class="flex justify-end space-x-4">
+        <a href="/pages" class="px-4 py-2 text-blue-400 hover:text-blue-300">
+          Cancel
+        </a>
+        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+          Create Page
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<%- contentFor('scripts') %>
+<script>
+// Sync color inputs
+function setupColorInputs(colorId) {
+  const colorInput = document.getElementById(colorId);
+  const textInput = document.querySelector(`[data-color-input="${colorId}"]`);
+
+  colorInput.addEventListener('input', (e) => {
+    textInput.value = e.target.value;
+  });
+
+  textInput.addEventListener('input', (e) => {
+    if (/^#[0-9A-Fa-f]{6}$/.test(e.target.value)) {
+      colorInput.value = e.target.value;
+    }
+  });
+}
+
+setupColorInputs('backgroundColor');
+setupColorInputs('textColor');
+</script> 

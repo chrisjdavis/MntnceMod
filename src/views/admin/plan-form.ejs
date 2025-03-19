@@ -1,0 +1,150 @@
+<%- contentFor('title', plan ? 'Edit Subscription Plan' : 'Create Subscription Plan') %>
+<%- contentFor('body') %>
+
+<div class="container mx-auto px-4 py-8">
+  <div class="max-w-3xl mx-auto">
+    <div class="flex justify-between items-center mb-8">
+      <h1 class="text-3xl font-bold text-white"><%= plan ? 'Edit Subscription Plan' : 'Create Subscription Plan' %></h1>
+      <a href="/admin/plans" class="text-blue-400 hover:text-blue-300">
+        Back to Plans
+      </a>
+    </div>
+
+    <% if (typeof messages.error_msg !== 'undefined' && messages.error_msg.length > 0) { %>
+      <div class="bg-red-900/50 text-red-400 p-4 rounded-lg mb-6">
+        <%= messages.error_msg %>
+      </div>
+    <% } %>
+
+    <form action="/admin/plans" method="POST" class="bg-dark-800 rounded-lg shadow-md p-6">
+      <% if (plan) { %>
+        <input type="hidden" name="_id" value="<%= plan._id %>">
+      <% } %>
+
+      <div class="space-y-6">
+        <!-- Basic Information -->
+        <div>
+          <h2 class="text-xl font-semibold text-white mb-4">Basic Information</h2>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label for="name" class="block text-sm font-medium text-gray-400 mb-2">Plan Name</label>
+              <input type="text" id="name" name="name" required
+                value="<%= plan ? plan.name : '' %>"
+                class="w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white">
+            </div>
+
+            <div>
+              <label for="code" class="block text-sm font-medium text-gray-400 mb-2">Plan Code</label>
+              <input type="text" id="code" name="code" required
+                value="<%= plan ? plan.code : '' %>"
+                class="w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white">
+              <p class="mt-1 text-sm text-gray-500">Used internally to identify the plan</p>
+            </div>
+          </div>
+
+          <div class="mt-6">
+            <label for="description" class="block text-sm font-medium text-gray-400 mb-2">Description</label>
+            <textarea id="description" name="description" rows="3" required
+              class="w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"><%= plan ? plan.description : '' %></textarea>
+          </div>
+        </div>
+
+        <!-- Pricing -->
+        <div>
+          <h2 class="text-xl font-semibold text-white mb-4">Pricing</h2>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label for="price" class="block text-sm font-medium text-gray-400 mb-2">Price</label>
+              <div class="relative">
+                <span class="absolute left-3 top-2 text-gray-400">$</span>
+                <input type="number" id="price" name="price" required min="0" step="0.01"
+                  value="<%= plan ? plan.price : '' %>"
+                  class="w-full pl-8 pr-3 py-2 bg-dark-700 border border-dark-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white">
+              </div>
+            </div>
+
+            <div>
+              <label for="interval" class="block text-sm font-medium text-gray-400 mb-2">Billing Interval</label>
+              <select id="interval" name="interval" required
+                class="w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white">
+                <option value="month" <%= plan && plan.interval === 'month' ? 'selected' : '' %>>Monthly</option>
+                <option value="year" <%= plan && plan.interval === 'year' ? 'selected' : '' %>>Yearly</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="mt-6">
+            <label for="stripePriceId" class="block text-sm font-medium text-gray-400 mb-2">Stripe Price ID</label>
+            <input type="text" id="stripePriceId" name="stripePriceId" required
+              value="<%= plan ? plan.stripePriceId : '' %>"
+              class="w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white">
+            <p class="mt-1 text-sm text-gray-500">The price ID from your Stripe dashboard</p>
+          </div>
+        </div>
+
+        <!-- Limits -->
+        <div>
+          <h2 class="text-xl font-semibold text-white mb-4">Plan Limits</h2>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label for="pages" class="block text-sm font-medium text-gray-400 mb-2">Maximum Pages</label>
+              <input type="number" id="pages" name="pages" required min="1"
+                value="<%= plan ? plan.limits.pages : '' %>"
+                class="w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white">
+            </div>
+
+            <div>
+              <label for="viewsPerPage" class="block text-sm font-medium text-gray-400 mb-2">Views per Page</label>
+              <input type="number" id="viewsPerPage" name="viewsPerPage" required min="1"
+                value="<%= plan ? plan.limits.viewsPerPage : '' %>"
+                class="w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white">
+            </div>
+          </div>
+        </div>
+
+        <!-- Features -->
+        <div>
+          <h2 class="text-xl font-semibold text-white mb-4">Plan Features</h2>
+          
+          <div>
+            <label for="features" class="block text-sm font-medium text-gray-400 mb-2">Features List</label>
+            <textarea id="features" name="features" rows="5" required
+              class="w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"><%= plan ? plan.features.join('\n') : '' %></textarea>
+            <p class="mt-1 text-sm text-gray-500">Enter one feature per line</p>
+          </div>
+        </div>
+
+        <!-- Status -->
+        <div>
+          <h2 class="text-xl font-semibold text-white mb-4">Plan Status</h2>
+          
+          <div class="flex items-center">
+            <input type="checkbox" id="isActive" name="isActive" value="true"
+              <%= plan && plan.isActive ? 'checked' : '' %>
+              class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-dark-600 rounded bg-dark-700">
+            <label for="isActive" class="ml-2 block text-sm text-gray-400">
+              Active Plan
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-8 flex justify-end space-x-4">
+        <a href="/admin/plans" class="px-4 py-2 text-gray-400 hover:text-gray-300">
+          Cancel
+        </a>
+        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+          <%= plan ? 'Update Plan' : 'Create Plan' %>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<%- contentFor('scripts') %>
+<script>
+  // Add any JavaScript for form handling here
+</script> 

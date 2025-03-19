@@ -1,0 +1,399 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-gray-100 text-gray-900 dark:bg-gray-900 dark:text-white;
+  }
+}
+
+@layer components {
+  .btn {
+    @apply px-4 py-2 rounded-lg font-medium transition-colors duration-200;
+  }
+
+  .btn-primary {
+    @apply bg-neon-blue text-dark-900 hover:bg-neon-purple;
+  }
+
+  .btn-secondary {
+    @apply bg-dark-800 text-white hover:bg-dark-700;
+  }
+
+  .btn-danger {
+    @apply bg-neon-pink text-white hover:bg-opacity-90;
+  }
+
+  .card {
+    @apply bg-dark-800 rounded-xl p-6 shadow-lg border border-dark-700;
+  }
+
+  .input {
+    @apply bg-dark-700 border border-dark-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-neon-blue;
+  }
+
+  .label {
+    @apply block text-sm font-medium text-gray-300 mb-1;
+  }
+
+  .nav-link {
+    @apply inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-700 dark:text-white hover:text-gray-900 dark:hover:text-white transition-colors duration-200;
+  }
+
+  .nav-link-active {
+    @apply inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-900 dark:text-white border-b-2 border-neon-blue;
+  }
+
+  .form-input {
+    @apply bg-dark-700 border border-dark-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-neon-blue transition-all duration-200;
+  }
+
+  .form-label {
+    @apply block text-sm font-medium text-gray-300 mb-1;
+  }
+
+  .form-error {
+    @apply text-sm text-red-400 mt-1;
+  }
+
+  .table th {
+    @apply px-6 py-3 bg-dark-800 text-left text-xs font-medium text-gray-400 uppercase tracking-wider;
+  }
+
+  .table td {
+    @apply px-6 py-4 whitespace-nowrap text-sm text-gray-300;
+  }
+
+  .table tr {
+    @apply hover:bg-dark-800 transition-colors duration-200;
+  }
+
+  .toast {
+    @apply fixed bottom-4 right-4 px-4 py-3 rounded-lg shadow-lg max-w-sm transform transition-all duration-300 bg-dark-800 border border-dark-700;
+  }
+
+  .toast-success {
+    @apply bg-dark-800 text-green-400 border-green-500;
+  }
+
+  .toast-error {
+    @apply bg-dark-800 text-red-400 border-red-500;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-dark-800;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-dark-600 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-dark-500;
+}
+
+/* Neon text effect */
+.neon-text {
+  text-shadow: 0 0 10px theme('colors.neon.blue'),
+               0 0 20px theme('colors.neon.blue'),
+               0 0 30px theme('colors.neon.blue');
+}
+
+/* Glass effect */
+.glass {
+  @apply bg-dark-800 bg-opacity-50 backdrop-blur-lg border border-white border-opacity-10;
+}
+
+/* Gradient backgrounds */
+.gradient-primary {
+  @apply bg-gradient-to-r from-neon-blue to-neon-purple;
+}
+
+.gradient-secondary {
+  @apply bg-gradient-to-r from-dark-800 to-dark-900;
+}
+
+/* Loading animation */
+.loading {
+  @apply animate-pulse bg-dark-700 rounded;
+}
+
+/* Status badges */
+.status-badge {
+  @apply px-2 py-1 rounded-full text-xs font-medium;
+}
+
+.status-operational {
+  @apply bg-neon-green bg-opacity-20 text-neon-green;
+}
+
+.status-degraded {
+  @apply bg-yellow-500 bg-opacity-20 text-yellow-500;
+}
+
+.status-down {
+  @apply bg-neon-pink bg-opacity-20 text-neon-pink;
+}
+
+.status-maintenance {
+  @apply bg-neon-blue bg-opacity-20 text-neon-blue;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out forwards;
+}
+
+/* Loading states */
+.loading::after {
+  content: '';
+  @apply absolute inset-0 bg-dark-800 bg-opacity-75;
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* Typography */
+.heading-1 {
+  @apply text-4xl font-bold text-white sm:text-5xl;
+}
+
+.heading-2 {
+  @apply text-3xl font-bold text-white sm:text-4xl;
+}
+
+.heading-3 {
+  @apply text-2xl font-bold text-white sm:text-3xl;
+}
+
+.text-gradient {
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-neon-blue to-neon-purple;
+}
+
+.text-mono {
+  font-family: 'Geist Mono', monospace;
+}
+
+/* Base styles */
+:root {
+  --primary: #0ea5e9;
+  --primary-dark: #0284c7;
+  --primary-light: #38bdf8;
+  --background: #f8fafc;
+  --surface: #ffffff;
+  --text: #1e293b;
+  --text-secondary: #64748b;
+  --border: #e2e8f0;
+  --success: #22c55e;
+  --error: #ef4444;
+  --warning: #f59e0b;
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+  @apply bg-gray-100;
+}
+
+html.dark {
+  @apply bg-gray-900;
+}
+
+/* Modern form styles */
+.form-input:focus {
+  box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+}
+
+/* Button styles */
+.btn {
+  @apply inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg shadow-sm transition-all duration-200;
+}
+
+.btn-primary {
+  @apply bg-primary-600 text-white hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500;
+}
+
+.btn-secondary {
+  @apply bg-white text-gray-700 border-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500;
+}
+
+/* Card styles */
+.card {
+  @apply bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden transition-all duration-200 hover:shadow-md;
+}
+
+.card-header {
+  @apply px-6 py-4 border-b border-gray-200;
+}
+
+.card-body {
+  @apply px-6 py-4;
+}
+
+.card-footer {
+  @apply px-6 py-4 bg-gray-50 border-t border-gray-200;
+}
+
+/* Status badges */
+.status-badge {
+  @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+}
+
+.status-operational {
+  @apply bg-green-100 text-green-800;
+}
+
+.status-maintenance {
+  @apply bg-yellow-100 text-yellow-800;
+}
+
+.status-degraded {
+  @apply bg-orange-100 text-orange-800;
+}
+
+.status-down {
+  @apply bg-red-100 text-red-800;
+}
+
+/* Grid layouts */
+.grid-auto-fit {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+}
+
+/* Responsive container */
+.container-fluid {
+  @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+}
+
+/* Focus styles */
+.focus-ring {
+  @apply focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500;
+}
+
+/* Transitions */
+.transition-all {
+  @apply transition-property-all transition-duration-200 transition-timing-function-ease-in-out;
+}
+
+/* Shadows */
+.shadow-hover {
+  @apply transition-shadow duration-200 hover:shadow-lg;
+}
+
+/* Table styles */
+.table-container {
+  @apply overflow-x-auto;
+}
+
+.table {
+  @apply min-w-full divide-y divide-gray-200;
+}
+
+/* Form groups */
+.form-group {
+  @apply space-y-2;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-gray-100;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-gray-300 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-gray-400;
+}
+
+/* Focus styles */
+.focus-ring {
+  @apply focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500;
+}
+
+/* Transitions */
+.transition-all {
+  @apply transition-property-all transition-duration-200 transition-timing-function-ease-in-out;
+}
+
+/* Shadows */
+.shadow-hover {
+  @apply transition-shadow duration-200 hover:shadow-lg;
+}
+
+/* Typography */
+.heading-1 {
+  @apply text-4xl font-bold text-gray-900 sm:text-5xl;
+}
+
+.heading-2 {
+  @apply text-3xl font-bold text-gray-900 sm:text-4xl;
+}
+
+.heading-3 {
+  @apply text-2xl font-bold text-gray-900 sm:text-3xl;
+}
+
+.text-gradient {
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-primary-600 to-primary-400;
+}
+
+/* Admin Dropdown Menu */
+#admin-menu {
+  @apply z-50;
+  display: none;
+}
+
+#admin-menu:not(.hidden) {
+  display: block !important;
+}
+
+#admin-menu .py-1 {
+  @apply bg-dark-800 border border-dark-700 rounded-lg shadow-lg;
+}
+
+#admin-menu a {
+  @apply text-gray-300 hover:text-white hover:bg-dark-700 transition-colors duration-200;
+}
+
+#admin-menu svg {
+  @apply text-gray-400 group-hover:text-white transition-colors duration-200;
+}
+
+/* Ensure dropdown container is positioned correctly */
+.relative {
+  position: relative;
+} 

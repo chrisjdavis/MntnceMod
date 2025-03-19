@@ -1,0 +1,159 @@
+<%
+const state = typeof page !== 'undefined' ? 'Edit Page' : 'Create New Page';
+title = state;
+%>
+
+<div class="py-6">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Header -->
+        <div class="flex justify-between items-center mb-8">
+            <div>
+                <h1 class="text-2xl font-semibold text-white">
+                    <%= typeof page !== 'undefined' ? 'Edit Page' : 'Create New Page' %>
+                </h1>
+                <p class="text-gray-400">Customize your maintenance page</p>
+            </div>
+            <div class="flex space-x-4">
+                <button type="button" id="previewButton" class="btn btn-secondary">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    </svg>
+                    Preview
+                </button>
+                <button type="submit" form="pageForm" class="btn btn-primary">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+                    </svg>
+                    Save
+                </button>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Editor Form -->
+            <div class="space-y-6">
+                <form id="pageForm" class="space-y-6" action="<%= typeof page !== 'undefined' ? `/pages/${page._id}` : '/pages' %>" method="POST">
+                    <% if (typeof page !== 'undefined') { %>
+                        <input type="hidden" name="_method" value="PUT">
+                    <% } %>
+
+                    <!-- Basic Information -->
+                    <div class="card">
+                        <h3 class="text-lg font-semibold text-white mb-4">Basic Information</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <label for="title" class="label">Title</label>
+                                <input type="text" id="title" name="title" required
+                                    class="input text-black w-full"
+                                    value="<%= typeof page !== 'undefined' ? page.title : '' %>"
+                                    placeholder="Enter page title">
+                            </div>
+                            <div>
+                                <label for="description" class="label">Description</label>
+                                <textarea id="description" name="description" required
+                                    class="input text-black w-full h-32"
+                                    placeholder="Enter page description"><%= typeof page !== 'undefined' ? page.description : '' %></textarea>
+                            </div>
+                            <div>
+                                <label for="status" class="label">Status</label>
+                                <select id="status" name="status" required
+                                    class="input text-black w-full">
+                                    <option value="operational" <%= typeof page !== 'undefined' && page.status === 'operational' ? 'selected' : '' %>>Operational</option>
+                                    <option value="degraded" <%= typeof page !== 'undefined' && page.status === 'degraded' ? 'selected' : '' %>>Degraded</option>
+                                    <option value="down" <%= typeof page !== 'undefined' && page.status === 'down' ? 'selected' : '' %>>Down</option>
+                                    <option value="maintenance" <%= typeof page !== 'undefined' && page.status === 'maintenance' ? 'selected' : '' %>>Maintenance</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Design Settings -->
+                    <div class="card">
+                        <h3 class="text-lg font-semibold text-white mb-4">Design Settings</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <label for="backgroundColor" class="label">Background Color</label>
+                                <input type="color" id="backgroundColor" name="design[backgroundColor]"
+                                    class="input text-black w-full h-10"
+                                    value="<%= typeof page !== 'undefined' ? page.design.backgroundColor : '#000000' %>">
+                            </div>
+                            <div>
+                                <label for="textColor" class="label">Text Color</label>
+                                <input type="color" id="textColor" name="design[textColor]"
+                                    class="input text-black w-full h-10"
+                                    value="<%= typeof page !== 'undefined' ? page.design.textColor : '#ffffff' %>">
+                            </div>
+                            <div>
+                                <label for="fontFamily" class="label">Font Family</label>
+                                <select id="fontFamily" name="design[fontFamily]"
+                                    class="input text-black w-full">
+                                    <option value="Inter" <%= typeof page !== 'undefined' && page.design.fontFamily === 'Inter' ? 'selected' : '' %>>Inter</option>
+                                    <option value="Roboto" <%= typeof page !== 'undefined' && page.design.fontFamily === 'Roboto' ? 'selected' : '' %>>Roboto</option>
+                                    <option value="Open Sans" <%= typeof page !== 'undefined' && page.design.fontFamily === 'Open Sans' ? 'selected' : '' %>>Open Sans</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="layout" class="label">Layout</label>
+                                <select id="layout" name="design[layout]"
+                                    class="input text-black w-full">
+                                    <option value="centered" <%= typeof page !== 'undefined' && page.design.layout === 'centered' ? 'selected' : '' %>>Centered</option>
+                                    <option value="left-aligned" <%= typeof page !== 'undefined' && page.design.layout === 'left-aligned' ? 'selected' : '' %>>Left Aligned</option>
+                                    <option value="right-aligned" <%= typeof page !== 'undefined' && page.design.layout === 'right-aligned' ? 'selected' : '' %>>Right Aligned</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="logo" class="label">Logo URL</label>
+                                <input type="url" id="logo" name="design[logo]"
+                                    class="input text-black w-full"
+                                    value="<%= typeof page !== 'undefined' ? page.design.logo : '' %>"
+                                    placeholder="Enter logo URL">
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Live Preview -->
+            <div class="card">
+                <h3 class="text-lg font-semibold text-white mb-4">Live Preview</h3>
+                <div id="preview" class="w-full h-[600px] rounded-lg overflow-hidden">
+                    <iframe id="previewFrame" class="w-full h-full" frameborder="0"></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- contentFor('scripts') %>
+<script>
+    // Preview functionality
+    const previewButton = document.getElementById('previewButton');
+    const previewFrame = document.getElementById('previewFrame');
+    const form = document.getElementById('pageForm');
+
+    function updatePreview() {
+        const formData = new FormData(form);
+        const data = Object.fromEntries(formData.entries());
+        
+        // Create a preview URL with the current form data
+        const previewUrl = `/api/preview?${new URLSearchParams(data)}`;
+        previewFrame.src = previewUrl;
+    }
+
+    // Update preview when form fields change
+    form.addEventListener('input', updatePreview);
+    form.addEventListener('change', updatePreview);
+
+    // Toggle preview panel
+    previewButton.addEventListener('click', () => {
+        const preview = document.getElementById('preview');
+        preview.classList.toggle('hidden');
+        if (!preview.classList.contains('hidden')) {
+            updatePreview();
+        }
+    });
+
+    // Initial preview
+    updatePreview();
+</script> 

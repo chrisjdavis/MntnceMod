@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maintenance - <%= locals.settings?.siteName || 'StatusSaaS' %></title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@100..900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --maintenance-bg: <%- settings.maintenanceBackgroundColor || '#0f172a' %>;
+            --maintenance-text: <%- settings.maintenanceTextColor || '#ffffff' %>;
+        }
+        body {
+            background-color: var(--maintenance-bg);
+            color: var(--maintenance-text);
+            font-family: 'Geist Mono', monospace;
+        }
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Inter var', sans-serif;
+            color: var(--maintenance-text);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center p-4">
+    <div class="max-w-2xl w-full text-center">
+        <% if (settings.showMaintenanceLogo && settings.maintenanceLogo) { %>
+            <div class="mb-8">
+                <img src="<%= settings.maintenanceLogo %>" alt="<%= settings.siteName %> Logo" class="max-h-12 mx-auto">
+            </div>
+        <% } %>
+        
+        <h1 class="text-4xl font-bold mb-4">We'll be back soon!</h1>
+        <p class="text-xl opacity-80 mb-8">
+            We're currently performing maintenance on our systems.<br>
+            Please check back in a little while.
+        </p>
+        
+        <div class="animate-pulse">
+            <svg class="mx-auto h-8 w-8" fill="none" viewBox="0 0 24 24">
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+            </svg>
+        </div>
+    </div>
+
+    <footer class="fixed bottom-0 w-full p-4 text-center opacity-60 text-sm">
+        &copy; <%= new Date().getFullYear() %> <%= settings.siteName || 'StatusSaaS' %>
+    </footer>
+</body>
+</html> 

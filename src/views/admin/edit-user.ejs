@@ -1,0 +1,21 @@
+                    <div class="mt-1">
+                      <input type="text" name="name" id="name" value="<%= user.name %>" class="shadow-sm focus:ring-neon-blue focus:border-neon-blue block w-full sm:text-sm border-gray-300 dark:border-gray-600 rounded-md dark:bg-gray-700 dark:text-white p-4">
+                    </div>
+                    <div class="mt-1">
+                      <input type="email" name="email" id="email" value="<%= user.email %>" class="shadow-sm focus:ring-neon-blue focus:border-neon-blue block w-full sm:text-sm border-gray-300 dark:border-gray-600 rounded-md dark:bg-gray-700 dark:text-white p-4">
+                    </div>
+                    <div class="mt-1">
+                      <select name="role" id="role" class="shadow-sm focus:ring-neon-blue focus:border-neon-blue block w-full sm:text-sm border-gray-300 dark:border-gray-600 rounded-md dark:bg-gray-700 dark:text-white p-4">
+                        <option value="user" <%= user.role === 'user' ? 'selected' : '' %>>User</option>
+                        <option value="admin" <%= user.role === 'admin' ? 'selected' : '' %>>Admin</option>
+                      </select>
+                    </div>
+                    <div class="mt-1">
+                      <select name="status" id="status" class="shadow-sm focus:ring-neon-blue focus:border-neon-blue block w-full sm:text-sm border-gray-300 dark:border-gray-600 rounded-md dark:bg-gray-700 dark:text-white p-4">
+                        <option value="active" <%= user.status === 'active' ? 'selected' : '' %>>Active</option>
+                        <option value="inactive" <%= user.status === 'inactive' ? 'selected' : '' %>>Inactive</option>
+                      </select>
+                    </div>
+                    <div class="mt-1">
+                      <input type="password" name="password" id="password" class="shadow-sm focus:ring-neon-blue focus:border-neon-blue block w-full sm:text-sm border-gray-300 dark:border-gray-600 rounded-md dark:bg-gray-700 dark:text-white p-4">
+                    </div> 

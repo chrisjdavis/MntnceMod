@@ -1,0 +1,174 @@
+<%
+title = 'Admin Dashboard';
+%>
+
+<%- contentFor('body') %>
+
+<div class="min-h-screen bg-gray-100 dark:bg-gray-900">
+  <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+    <!-- Page Header -->
+    <div class="px-4 py-5 sm:px-0">
+      <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Admin Dashboard</h1>
+      <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Overview of your system's performance and status</p>
+    </div>
+
+    <%- include('partials/tabs') %>
+
+    <!-- Stats Grid -->
+    <div class="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+      <!-- Total Users -->
+      <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
+        <div class="p-5">
+          <div class="flex items-center">
+            <div class="flex-shrink-0">
+              <svg class="h-6 w-6 text-neon-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+              </svg>
+            </div>
+            <div class="ml-5 w-0 flex-1">
+              <dl>
+                <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">Total Users</dt>
+                <dd class="flex items-baseline">
+                  <div class="text-2xl font-semibold text-gray-900 dark:text-white"><%= stats.totalUsers %></div>
+                </dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Active Pages -->
+      <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
+        <div class="p-5">
+          <div class="flex items-center">
+            <div class="flex-shrink-0">
+              <svg class="h-6 w-6 text-neon-pink" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+              </svg>
+            </div>
+            <div class="ml-5 w-0 flex-1">
+              <dl>
+                <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">Active Pages</dt>
+                <dd class="flex items-baseline">
+                  <div class="text-2xl font-semibold text-gray-900 dark:text-white"><%= stats.activePages %></div>
+                </dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Active Subscriptions -->
+      <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
+        <div class="p-5">
+          <div class="flex items-center">
+            <div class="flex-shrink-0">
+              <svg class="h-6 w-6 text-neon-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+            </div>
+            <div class="ml-5 w-0 flex-1">
+              <dl>
+                <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">Active Subscriptions</dt>
+                <dd class="flex items-baseline">
+                  <div class="text-2xl font-semibold text-gray-900 dark:text-white"><%= stats.activeSubscriptions %></div>
+                </dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Revenue (30 Days) -->
+      <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
+        <div class="p-5">
+          <div class="flex items-center">
+            <div class="flex-shrink-0">
+              <svg class="h-6 w-6 text-neon-yellow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+            </div>
+            <div class="ml-5 w-0 flex-1">
+              <dl>
+                <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">Revenue (30 Days)</dt>
+                <dd class="flex items-baseline">
+                  <div class="text-2xl font-semibold text-gray-900 dark:text-white">$<%= stats.revenue %></div>
+                </dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="mt-8">
+      <div class="bg-white dark:bg-gray-800 shadow rounded-lg">
+        <div class="px-4 py-5 sm:p-6">
+          <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-white">Recent Activity</h3>
+          <div class="mt-5 flow-root">
+            <ul class="-mb-8">
+              <% recentActivity.forEach((activity, index) => { %>
+                <li>
+                  <div class="relative pb-8">
+                    <% if (index !== recentActivity.length - 1) { %>
+                      <span class="absolute top-4 left-4 -ml-px h-full w-0.5 bg-gray-200 dark:bg-gray-700" aria-hidden="true"></span>
+                    <% } %>
+                    <div class="relative flex space-x-3">
+                      <div>
+                        <span class="h-8 w-8 rounded-full bg-neon-blue flex items-center justify-center ring-8 ring-white dark:ring-gray-800">
+                          <svg class="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                          </svg>
+                        </span>
+                      </div>
+                      <div class="min-w-0 flex-1 pt-1.5 flex justify-between space-x-4">
+                        <div>
+                          <p class="text-sm text-gray-500 dark:text-gray-400"><%= activity.description %></p>
+                          <p class="text-xs text-gray-400 dark:text-gray-500"><%= activity.timestamp %></p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+              <% }); %>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const adminMenuButton = document.getElementById('admin-menu-button');
+    const adminMenu = document.getElementById('admin-menu');
+    
+    if (!adminMenuButton || !adminMenu) {
+      console.error('Admin menu elements not found');
+      return;
+    }
+
+    // Toggle dropdown
+    adminMenuButton.addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      adminMenu.classList.toggle('hidden');
+      adminMenuButton.setAttribute('aria-expanded', adminMenu.classList.contains('hidden') ? 'false' : 'true');
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(e) {
+      if (!adminMenuButton.contains(e.target) && !adminMenu.contains(e.target)) {
+        adminMenu.classList.add('hidden');
+        adminMenuButton.setAttribute('aria-expanded', 'false');
+      }
+    });
+
+    // Prevent dropdown from closing when clicking inside it
+    adminMenu.addEventListener('click', function(e) {
+      e.stopPropagation();
+    });
+  });
+</script> 

@@ -1,0 +1,106 @@
+<%
+title = 'Edit User';
+%>
+
+<%- contentFor('body') %>
+<div class="min-h-screen bg-gray-100 dark:bg-gray-900">
+  <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+    <!-- Page Header -->
+    <div class="px-4 py-5 sm:px-0">
+      <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Edit User</h1>
+      <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Update user information and permissions</p>
+    </div>
+
+    <!-- Edit Form -->
+    <div class="mt-8">
+      <div class="bg-white dark:bg-gray-800 shadow rounded-lg">
+        <form action="/admin/users/<%= user._id %>?_method=PUT" method="POST" class="space-y-6 p-6">
+          <!-- Basic Information -->
+          <div>
+            <h3 class="text-lg font-medium leading-6 text-gray-900 dark:text-white">Basic Information</h3>
+            <div class="mt-6 grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
+              <div class="sm:col-span-3">
+                <label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Name</label>
+                <div class="mt-1">
+                  <input type="text" name="name" id="name" value="<%= user.name %>" class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 dark:border-gray-600 rounded-md dark:bg-gray-700 dark:text-white p-4">
+                </div>
+              </div>
+
+              <div class="sm:col-span-3">
+                <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Email</label>
+                <div class="mt-1">
+                  <input type="email" name="email" id="email" value="<%= user.email %>" class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 dark:border-gray-600 rounded-md dark:bg-gray-700 dark:text-white p-4">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Role and Status -->
+          <div>
+            <h3 class="text-lg font-medium leading-6 text-gray-900 dark:text-white">Role and Status</h3>
+            <div class="mt-6 grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
+              <div class="sm:col-span-3">
+                <label for="role" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Role</label>
+                <div class="mt-1">
+                  <select id="role" name="role" class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 dark:border-gray-600 rounded-md dark:bg-gray-700 dark:text-white p-4">
+                    <option value="user" <%= user.role === 'user' ? 'selected' : '' %>>User</option>
+                    <option value="admin" <%= user.role === 'admin' ? 'selected' : '' %>>Admin</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="sm:col-span-3">
+                <label for="status" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Status</label>
+                <div class="mt-1">
+                  <select id="status" name="status" class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 dark:border-gray-600 rounded-md dark:bg-gray-700 dark:text-white p-4">
+                    <option value="active" <%= user.status === 'active' ? 'selected' : '' %>>Active</option>
+                    <option value="inactive" <%= user.status === 'inactive' ? 'selected' : '' %>>Inactive</option>
+                    <option value="suspended" <%= user.status === 'suspended' ? 'selected' : '' %>>Suspended</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Subscription -->
+          <div>
+            <h3 class="text-lg font-medium leading-6 text-gray-900 dark:text-white">Subscription</h3>
+            <div class="mt-6 grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
+              <div class="sm:col-span-3">
+                <label for="subscription" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Plan</label>
+                <div class="mt-1">
+                  <select id="subscription" name="subscription" class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 dark:border-gray-600 rounded-md dark:bg-gray-700 dark:text-white p-4">
+                    <option value="free" <%= user.subscription?.plan === 'free' ? 'selected' : '' %>>Free</option>
+                    <option value="pro" <%= user.subscription?.plan === 'pro' ? 'selected' : '' %>>Pro</option>
+                    <option value="enterprise" <%= user.subscription?.plan === 'enterprise' ? 'selected' : '' %>>Enterprise</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="sm:col-span-3">
+                <label for="subscriptionStatus" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Subscription Status</label>
+                <div class="mt-1">
+                  <select id="subscriptionStatus" name="subscriptionStatus" class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 dark:border-gray-600 rounded-md dark:bg-gray-700 dark:text-white p-4">
+                    <option value="active" <%= user.subscription?.status === 'active' ? 'selected' : '' %>>Active</option>
+                    <option value="canceled" <%= user.subscription?.status === 'canceled' ? 'selected' : '' %>>Canceled</option>
+                    <option value="past_due" <%= user.subscription?.status === 'past_due' ? 'selected' : '' %>>Past Due</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Form Actions -->
+          <div class="flex justify-end space-x-3">
+            <a href="/admin/users" class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 shadow-sm text-sm font-medium rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+              Cancel
+            </a>
+            <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+              Save Changes
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div> 

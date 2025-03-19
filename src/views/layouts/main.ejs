@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= locals.title || 'StatusSaaS' %></title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link href="/css/style.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <%- locals.head %>
+</head>
+<body class="<%= locals.user && locals.user.theme === 'dark' ? 'dark' : '' %>">
+  <%- locals.body %>
+  <%- locals.scripts %>
+</body>
+</html> 
