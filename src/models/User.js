@@ -49,6 +49,13 @@ const userSchema = new mongoose.Schema({
       default: true
     }
   },
+  twoFactorEnabled: {
+    type: Boolean,
+    default: false
+  },
+  twoFactorSecret: {
+    type: String
+  },
   subscription: {
     status: {
       type: String,
@@ -237,6 +244,14 @@ userSchema.methods.hasActiveSubscription = function() {
   return this.subscription.status === 'active' && 
          (!this.subscription.currentPeriodEnd || new Date(this.subscription.currentPeriodEnd) > new Date());
 };
+
+// Hash password before saving
+userSchema.pre('save', async function(next) {
+  if (this.isModified('password')) {
+    this.password = await bcrypt.hash(this.password, 10);
+  }
+  next();
+});
 
 // Check if model exists before creating
 const User = mongoose.models.User || mongoose.model('User', userSchema);

@@ -5,6 +5,9 @@ const SubscriptionPlan = require('../models/SubscriptionPlan');
 const MaintenancePage = require('../models/MaintenancePage');
 const { isAuthenticated } = require('../middleware/auth');
 const bcrypt = require('bcryptjs');
+const LoginHistory = require('../models/LoginHistory');
+const speakeasy = require('speakeasy');
+const QRCode = require('qrcode');
 
 // GET /settings - Show settings page
 router.get('/', isAuthenticated, (req, res) => {
@@ -293,6 +296,174 @@ router.post('/subscription/change-plan', isAuthenticated, async (req, res) => {
     console.error('Error changing subscription plan:', error);
     req.flash('error', 'Failed to update subscription plan');
     res.redirect('/settings/subscription');
+  }
+});
+
+// GET /settings/security - Show security settings page
+router.get('/security', isAuthenticated, async (req, res) => {
+  try {
+    const loginHistory = await LoginHistory.find({ user: req.user._id })
+      .sort({ timestamp: -1 })
+      .limit(10);
+
+    res.locals.title = 'Security Settings';
+    const success = req.flash('success');
+    const error = req.flash('error');
+    
+    const renderData = {
+      user: req.user,
+      active: 'settings',
+      title: 'Security Settings',
+      path: '/settings/security',
+      loginHistory
+    };
+
+    // Only include messages if they have actual content
+    if (success && success.length > 0) {
+      renderData.messages = { success };
+    }
+    if (error && error.length > 0) {
+      renderData.messages = {
+        ...renderData.messages,
+        error
+      };
+    }
+    
+    res.render('settings/security', renderData);
+  } catch (error) {
+    console.error('Error loading security settings:', error);
+    req.flash('error', 'Error loading security settings');
+    res.redirect('/settings');
+  }
+});
+
+// POST /settings/security/password - Update password
+router.post('/security/password', isAuthenticated, async (req, res) => {
+  try {
+    const { currentPassword, newPassword, confirmPassword } = req.body;
+
+    // Validate password match
+    if (newPassword !== confirmPassword) {
+      req.flash('error', 'New passwords do not match');
+      return res.redirect('/settings/security');
+    }
+
+    // Validate current password
+    const user = await User.findById(req.user._id);
+    const isMatch = await bcrypt.compare(currentPassword, user.password);
+    if (!isMatch) {
+      req.flash('error', 'Current password is incorrect');
+      return res.redirect('/settings/security');
+    }
+
+    // Update password
+    user.password = await bcrypt.hash(newPassword, 10);
+    await user.save();
+
+    req.flash('success', 'Password updated successfully');
+    res.redirect('/settings/security');
+  } catch (error) {
+    console.error('Error updating password:', error);
+    req.flash('error', 'Error updating password');
+    res.redirect('/settings/security');
+  }
+});
+
+// GET /settings/security/2fa/setup - Setup 2FA
+router.get('/security/2fa/setup', isAuthenticated, async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+    if (user.twoFactorEnabled) {
+      req.flash('error', 'Two-factor authentication is already enabled');
+      return res.redirect('/settings/security');
+    }
+
+    // Generate a secret key
+    const secret = speakeasy.generateSecret({
+      name: `StatusSaaS:${user.email}`
+    });
+
+    // Store the secret temporarily in the session
+    req.session.temp2FASecret = secret.base32;
+
+    // Generate QR code
+    const qrCodeUrl = await QRCode.toDataURL(secret.otpauth_url);
+
+    res.locals.title = 'Setup Two-Factor Authentication';
+    res.render('settings/2fa-setup', {
+      user: req.user,
+      active: 'settings',
+      title: 'Setup Two-Factor Authentication',
+      path: '/settings/security',
+      qrCodeUrl,
+      secret: secret.base32
+    });
+  } catch (error) {
+    console.error('Error setting up 2FA:', error);
+    req.flash('error', 'Error setting up two-factor authentication');
+    res.redirect('/settings/security');
+  }
+});
+
+// POST /settings/security/2fa/verify - Verify and enable 2FA
+router.post('/security/2fa/verify', isAuthenticated, async (req, res) => {
+  try {
+    const { code } = req.body;
+    const user = await User.findById(req.user._id);
+
+    if (!req.session.temp2FASecret) {
+      req.flash('error', '2FA setup session expired. Please try again.');
+      return res.redirect('/settings/security');
+    }
+
+    // Verify the code
+    const verified = speakeasy.totp.verify({
+      secret: req.session.temp2FASecret,
+      encoding: 'base32',
+      token: code
+    });
+
+    if (!verified) {
+      req.flash('error', 'Invalid verification code. Please try again.');
+      return res.redirect('/settings/security/2fa/setup');
+    }
+
+    // Enable 2FA
+    user.twoFactorEnabled = true;
+    user.twoFactorSecret = req.session.temp2FASecret;
+    await user.save();
+
+    // Clear the temporary secret from the session
+    delete req.session.temp2FASecret;
+
+    req.flash('success', 'Two-factor authentication has been enabled successfully');
+    res.redirect('/settings/security');
+  } catch (error) {
+    console.error('Error verifying 2FA:', error);
+    req.flash('error', 'Error verifying two-factor authentication');
+    res.redirect('/settings/security');
+  }
+});
+
+// POST /settings/security/2fa/disable - Disable 2FA
+router.post('/security/2fa/disable', isAuthenticated, async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+    if (!user.twoFactorEnabled) {
+      req.flash('error', 'Two-factor authentication is not enabled');
+      return res.redirect('/settings/security');
+    }
+
+    user.twoFactorEnabled = false;
+    user.twoFactorSecret = undefined;
+    await user.save();
+
+    req.flash('success', 'Two-factor authentication has been disabled');
+    res.redirect('/settings/security');
+  } catch (error) {
+    console.error('Error disabling 2FA:', error);
+    req.flash('error', 'Error disabling two-factor authentication');
+    res.redirect('/settings/security');
   }
 });
 
