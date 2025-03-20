@@ -101,7 +101,7 @@ locals.currentPath = '/pages';
                     <%= (page.status === 'operational' || page.status === 'published') ? 'bg-success/15 text-success border border-success/20' : 
                        page.status === 'degraded' ? 'bg-warning/15 text-warning border border-warning/20' :
                        page.status === 'down' ? 'bg-destructive/15 text-destructive border border-destructive/20' :
-                       page.status === 'scheduled' ? 'bg-info/15 text-info border border-info/20' :
+                       page.status === 'scheduled' || page.status === 'draft' ? 'bg-info/15 text-info border border-info/20' :
                        'bg-secondary/15 text-secondary border border-secondary/20' %>">
                     <%= page.status %>
                     <% if (page.status === 'scheduled' && page.scheduledFor) { %>

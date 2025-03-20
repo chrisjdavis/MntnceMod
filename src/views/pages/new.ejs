@@ -12,7 +12,7 @@ title = 'Create New Page';
       </a>
     </div>
 
-    <form action="/pages" method="POST" class="bg-dark-800 rounded-lg shadow-md p-6">
+    <form action="/pages" method="POST" class="border rounded-lg shadow-md p-6">
       <!-- Basic Information -->
       <div class="mb-8">
         <h2 class="text-xl font-semibold text-white mb-4">Basic Information</h2>
@@ -20,7 +20,7 @@ title = 'Create New Page';
         <div class="mb-6">
           <label for="domain" class="block text-sm font-medium text-gray-400 mb-2">Domain</label>
           <input type="text" id="domain" name="domain" required
-            class="w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
+            class="w-full px-3 py-2 bg-black border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
             placeholder="example.com">
           <p class="mt-1 text-sm text-gray-500">The domain where this maintenance page will be displayed.</p>
         </div>
@@ -28,13 +28,13 @@ title = 'Create New Page';
         <div class="mb-6">
           <label for="title" class="block text-sm font-medium text-gray-400 mb-2">Page Title</label>
           <input type="text" id="title" name="title" required
-            class="w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white">
+            class="w-full px-3 py-2 bg-black border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white">
         </div>
 
         <div class="mb-6">
           <label for="description" class="block text-sm font-medium text-gray-400 mb-2">Description</label>
           <textarea id="description" name="description" rows="3"
-            class="w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
+            class="w-full px-3 py-2 bg-black border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
             placeholder="Enter a brief description of your status page (optional)"></textarea>
           <p class="mt-1 text-sm text-gray-500">Optional. A brief description of your status page.</p>
         </div>
@@ -42,13 +42,13 @@ title = 'Create New Page';
         <div class="mb-6">
           <label for="content" class="block text-sm font-medium text-gray-400 mb-2">Page Content</label>
           <textarea id="content" name="content" rows="10" required
-            class="w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"></textarea>
+            class="w-full px-3 py-2 bg-black border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"></textarea>
         </div>
 
         <div class="mb-6">
           <label for="status" class="block text-sm font-medium text-gray-400 mb-2">Status</label>
           <select id="status" name="status" required
-            class="w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white">
+            class="w-full px-3 py-2 bg-black border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white">
             <option value="draft">Draft</option>
             <option value="published">Published</option>
             <option value="scheduled">Scheduled</option>
@@ -60,7 +60,7 @@ title = 'Create New Page';
           <label for="scheduledFor" class="block text-sm font-medium text-gray-400 mb-2">Schedule For</label>
           <div class="relative">
             <input type="datetime-local" id="scheduledFor" name="scheduledFor"
-              class="w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
+              class="w-full px-3 py-2 bg-black border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
               min="<%= new Date().toISOString().slice(0, 16) %>">
             <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
               <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
@@ -83,7 +83,7 @@ title = 'Create New Page';
               <input type="color" id="backgroundColor" name="design[backgroundColor]" value="#000000"
                 class="h-10 w-10 p-1 rounded border border-dark-600">
               <input type="text" data-color-input="backgroundColor" value="#000000"
-                class="flex-1 px-3 py-2 bg-dark-700 border border-dark-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white">
+                class="flex-1 px-3 py-2 bg-black border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white">
             </div>
           </div>
 
@@ -93,7 +93,7 @@ title = 'Create New Page';
               <input type="color" id="textColor" name="design[textColor]" value="#ffffff"
                 class="h-10 w-10 p-1 rounded border border-dark-600">
               <input type="text" data-color-input="textColor" value="#ffffff"
-                class="flex-1 px-3 py-2 bg-dark-700 border border-dark-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white">
+                class="flex-1 px-3 py-2 bg-black border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white">
             </div>
           </div>
         </div>
@@ -101,7 +101,7 @@ title = 'Create New Page';
         <div class="mt-6">
           <label for="fontFamily" class="block text-sm font-medium text-gray-400 mb-2">Font Family</label>
           <select id="fontFamily" name="design[fontFamily]"
-            class="w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white">
+            class="w-full px-3 py-2 bg-black border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white">
             <option value="Inter">Inter</option>
             <option value="Roboto">Roboto</option>
             <option value="Open Sans">Open Sans</option>
@@ -111,7 +111,7 @@ title = 'Create New Page';
         <div class="mt-6">
           <label for="layout" class="block text-sm font-medium text-gray-400 mb-2">Layout</label>
           <select id="layout" name="design[layout]"
-            class="w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white">
+            class="w-full px-3 py-2 bg-black border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white">
             <option value="centered">Centered</option>
             <option value="left-aligned">Left Aligned</option>
             <option value="right-aligned">Right Aligned</option>
@@ -121,17 +121,33 @@ title = 'Create New Page';
         <div class="mt-6">
           <label for="logo" class="block text-sm font-medium text-gray-400 mb-2">Logo URL</label>
           <input type="url" id="logo" name="design[logo]"
-            class="w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
+            class="w-full px-3 py-2 bg-black border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
             placeholder="https://example.com/logo.png">
           <p class="mt-1 text-sm text-gray-500">Optional. Recommended size: 200x50px</p>
         </div>
       </div>
 
+      <div class="mt-6">
+        <label for="logoWidth" class="block text-sm font-medium text-gray-400 mb-2">Logo Width (px)</label>
+        <input type="number" id="logoWidth" name="design[logoSize][width]" value="<%= page.design?.logoSize?.width || 200 %>"
+          class="w-full px-3 py-2 bg-black border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
+          min="1" max="1000">
+        <p class="mt-1 text-sm text-gray-500">Width of the logo in pixels (1-1000px). Default: 200px</p>
+      </div>
+
+      <div class="mt-6">
+        <label for="maxWidth" class="block text-sm font-medium text-gray-400 mb-2">Max Page Width (px)</label>
+        <input type="number" id="maxWidth" name="design[maxWidth]" value="<%= page.design?.maxWidth || 768 %>"
+          class="w-full px-3 py-2 bg-black border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
+          min="320" max="1920" step="1">
+        <p class="mt-1 text-sm text-gray-500">Content maximum width in pixels (320-1920px). Default: 768px</p>
+      </div>
+
       <div class="flex justify-end space-x-4">
-        <a href="/pages" class="px-4 py-2 text-blue-400 hover:text-blue-300">
+        <a href="/pages" class="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-9 px-3">
           Cancel
         </a>
-        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+        <button type="submit" class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-4">
           Create Page
         </button>
       </div>

@@ -9,7 +9,7 @@ const maintenancePageSchema = new mongoose.Schema({
   domain: {
     type: String,
     required: true,
-    unique: true
+    trim: true
   },
   title: {
     type: String,
