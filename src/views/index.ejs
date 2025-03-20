@@ -3,6 +3,7 @@ title = 'Home';
 %>
 
 <%- contentFor('body') %>
+
 <!-- Hero Section -->
 <div class="relative py-12 bg-[#0a0a0a] mb-6 rounded-2xl">
     <div class="max-w-3xl mx-auto relative">
@@ -36,7 +37,7 @@ title = 'Home';
     </div>
 </div>
 
-<!-- Features Section -->
+<!-- Features Overview -->
 <div class="relative py-12 bg-[#0a0a0a] mb-6 rounded-2xl">
     <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 relative">
         <div class="text-center">
@@ -47,54 +48,239 @@ title = 'Home';
                 Simple, powerful features to keep your users informed
             </p>
         </div>
+    </div>
+</div>
 
-        <div class="mt-10">
-            <div class="space-y-10">
-                <!-- Feature 1 -->
-                <div class="relative">
-                    <dt>
-                        <div class="absolute flex items-center justify-center h-12 w-12 rounded-lg bg-white text-black">
-                            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-                            </svg>
-                        </div>
-                        <p class="ml-16 text-lg leading-6 font-medium text-white">Real-time Updates</p>
-                    </dt>
-                    <dd class="mt-2 ml-16 text-base text-white">
-                        Keep your users informed with instant updates about your service status.
-                    </dd>
-                </div>
-
-                <!-- Feature 2 -->
-                <div class="relative">
-                    <dt>
-                        <div class="absolute flex items-center justify-center h-12 w-12 rounded-lg bg-white text-black">
-                            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
-                            </svg>
-                        </div>
-                        <p class="ml-16 text-lg leading-6 font-medium text-white">Customizable Design</p>
-                    </dt>
-                    <dd class="mt-2 ml-16 text-base text-white">
-                        Match your brand with custom colors, logos, and layouts.
-                    </dd>
-                </div>
-
-                <!-- Feature 3 -->
-                <div class="relative">
-                    <dt>
-                        <div class="absolute flex items-center justify-center h-12 w-12 rounded-lg bg-white text-black">
-                            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                            </svg>
-                        </div>
-                        <p class="ml-16 text-lg leading-6 font-medium text-white">Analytics</p>
-                    </dt>
-                    <dd class="mt-2 ml-16 text-base text-white">
-                        Track page views and understand how users interact with your status page.
-                    </dd>
+<!-- Visual Page Builder Section -->
+<div class="relative py-12 bg-[#0a0a0a] mb-6 rounded-2xl">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+        <div class="flex items-center">
+            <div class="flex-shrink-0">
+                <div class="flex items-center justify-center h-12 w-12 rounded-lg bg-white text-black">
+                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                    </svg>
                 </div>
             </div>
+            <h2 class="ml-6 text-2xl font-semibold text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.1)]">Visual Page Builder</h2>
+        </div>
+        <div class="mt-6 space-y-6 text-white">
+            <p class="text-lg">Create stunning status pages without writing a single line of code. Our intuitive visual builder puts you in control of your page's appearance.</p>
+            <ul class="space-y-4 text-base">
+                <li class="flex items-start">
+                    <svg class="h-6 w-6 text-white mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                    Drag-and-drop components to build your perfect layout
+                </li>
+                <li class="flex items-start">
+                    <svg class="h-6 w-6 text-white mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                    Customize colors and branding to match your identity
+                </li>
+                <li class="flex items-start">
+                    <svg class="h-6 w-6 text-white mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                    Mobile-responsive design out of the box
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!-- Real-time Updates Section -->
+<div class="relative py-12 bg-[#0a0a0a] mb-6 rounded-2xl">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+        <div class="flex items-center">
+            <div class="flex-shrink-0">
+                <div class="flex items-center justify-center h-12 w-12 rounded-lg bg-white text-black">
+                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+                </div>
+            </div>
+            <h2 class="ml-6 text-2xl font-semibold text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.1)]">Real-time Updates</h2>
+        </div>
+        <div class="mt-6 space-y-6 text-white">
+            <p class="text-lg">Keep your users in the loop with instant updates. No more delays or refresh needed - changes appear immediately across all your status pages.</p>
+            <ul class="space-y-4 text-base">
+                <li class="flex items-start">
+                    <svg class="h-6 w-6 text-white mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                    Instant propagation of status changes
+                </li>
+                <li class="flex items-start">
+                    <svg class="h-6 w-6 text-white mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                    Live component status indicators
+                </li>
+                <li class="flex items-start">
+                    <svg class="h-6 w-6 text-white mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                    Automatic page updates without refresh
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!-- Incident Management Section -->
+<div class="relative py-12 bg-[#0a0a0a] mb-6 rounded-2xl">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+        <div class="flex items-center">
+            <div class="flex-shrink-0">
+                <div class="flex items-center justify-center h-12 w-12 rounded-lg bg-white text-black">
+                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                </div>
+            </div>
+            <h2 class="ml-6 text-2xl font-semibold text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.1)]">Incident Management</h2>
+        </div>
+        <div class="mt-6 space-y-6 text-white">
+            <p class="text-lg">Handle service disruptions professionally with our comprehensive incident management system. Keep stakeholders informed throughout the entire incident lifecycle.</p>
+            <ul class="space-y-4 text-base">
+                <li class="flex items-start">
+                    <svg class="h-6 w-6 text-white mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                    Detailed incident timelines and updates
+                </li>
+                <li class="flex items-start">
+                    <svg class="h-6 w-6 text-white mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                    Impact assessment and severity tracking
+                </li>
+                <li class="flex items-start">
+                    <svg class="h-6 w-6 text-white mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                    Post-incident reports and analysis
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!-- Scheduled Maintenance Section -->
+<div class="relative py-12 bg-[#0a0a0a] mb-6 rounded-2xl">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+        <div class="flex items-center">
+            <div class="flex-shrink-0">
+                <div class="flex items-center justify-center h-12 w-12 rounded-lg bg-white text-black">
+                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                </div>
+            </div>
+            <h2 class="ml-6 text-2xl font-semibold text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.1)]">Scheduled Maintenance</h2>
+        </div>
+        <div class="mt-6 space-y-6 text-white">
+            <p class="text-lg">Plan and communicate maintenance activities effectively. Keep your users informed about upcoming system updates and maintenance windows.</p>
+            <ul class="space-y-4 text-base">
+                <li class="flex items-start">
+                    <svg class="h-6 w-6 text-white mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                    Schedule maintenance windows in advance
+                </li>
+                <li class="flex items-start">
+                    <svg class="h-6 w-6 text-white mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                    Automatic maintenance notifications
+                </li>
+                <li class="flex items-start">
+                    <svg class="h-6 w-6 text-white mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                    Timezone-aware scheduling
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!-- Analytics & Reporting Section -->
+<div class="relative py-12 bg-[#0a0a0a] mb-6 rounded-2xl">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+        <div class="flex items-center">
+            <div class="flex-shrink-0">
+                <div class="flex items-center justify-center h-12 w-12 rounded-lg bg-white text-black">
+                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                    </svg>
+                </div>
+            </div>
+            <h2 class="ml-6 text-2xl font-semibold text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.1)]">Analytics & Reporting</h2>
+        </div>
+        <div class="mt-6 space-y-6 text-white">
+            <p class="text-lg">Make data-driven decisions with comprehensive analytics. Monitor your service performance and generate detailed reports for stakeholders.</p>
+            <ul class="space-y-4 text-base">
+                <li class="flex items-start">
+                    <svg class="h-6 w-6 text-white mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                    Historical uptime tracking
+                </li>
+                <li class="flex items-start">
+                    <svg class="h-6 w-6 text-white mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                    Incident frequency and resolution metrics
+                </li>
+                <li class="flex items-start">
+                    <svg class="h-6 w-6 text-white mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                    Custom report generation
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!-- Smart Notifications Section -->
+<div class="relative py-12 bg-[#0a0a0a] mb-6 rounded-2xl">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+        <div class="flex items-center">
+            <div class="flex-shrink-0">
+                <div class="flex items-center justify-center h-12 w-12 rounded-lg bg-white text-black">
+                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                    </svg>
+                </div>
+            </div>
+            <h2 class="ml-6 text-2xl font-semibold text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.1)]">Smart Notifications</h2>
+        </div>
+        <div class="mt-6 space-y-6 text-white">
+            <p class="text-lg">Reach your users wherever they are with multi-channel notifications. Keep everyone informed through their preferred communication channels.</p>
+            <ul class="space-y-4 text-base">
+                <li class="flex items-start">
+                    <svg class="h-6 w-6 text-white mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                    Email, SMS, and webhook notifications
+                </li>
+                <li class="flex items-start">
+                    <svg class="h-6 w-6 text-white mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                    Customizable notification templates
+                </li>
+                <li class="flex items-start">
+                    <svg class="h-6 w-6 text-white mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                    Subscriber preference management
+                </li>
+            </ul>
         </div>
     </div>
 </div>

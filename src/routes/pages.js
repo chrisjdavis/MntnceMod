@@ -43,7 +43,11 @@ router.get('/new', isAuthenticated, async (req, res) => {
     }
     res.render('page-editor', {
       user: req.user,
-      active: 'pages'
+      active: 'pages',
+      messages: {
+        success_msg: req.flash('success_msg'),
+        error_msg: req.flash('error_msg')
+      }
     });
   } catch (error) {
     console.error('New Page Error:', error);
@@ -109,7 +113,7 @@ router.post('/', isAuthenticated, async (req, res) => {
     await Activity.log(req.user._id, 'page_create', `Created new page: ${title}`);
 
     req.flash('success_msg', 'Page created successfully');
-    res.redirect(`/pages/${page._id}`);
+    res.redirect(`/pages/${page._id}/edit`);
   } catch (error) {
     console.error('Create Page Error:', error);
     req.flash('error_msg', 'Error creating page');
@@ -170,7 +174,11 @@ router.get('/:id/edit', isAuthenticated, async (req, res) => {
     res.render('page-editor', { 
       page: pageData,
       user: req.user,
-      active: 'pages'
+      active: 'pages',
+      messages: {
+        success_msg: req.flash('success_msg'),
+        error_msg: req.flash('error_msg')
+      }
     });
   } catch (error) {
     console.error('Edit Page Error:', error);
@@ -182,7 +190,8 @@ router.get('/:id/edit', isAuthenticated, async (req, res) => {
 // Update page
 router.put('/:id', isAuthenticated, async (req, res) => {
   try {
-    const { title, description, content, status, design, publishType, scheduledFor } = req.body;
+    const pageData = typeof req.body.data === 'string' ? JSON.parse(req.body.data) : req.body;
+    const { title, content, status, design, publishType, scheduledFor } = pageData;
 
     const page = await Page.findOne({ _id: req.params.id, user: req.user._id });
     if (!page) {
@@ -192,7 +201,6 @@ router.put('/:id', isAuthenticated, async (req, res) => {
 
     // Update basic fields
     page.title = title;
-    page.description = description;
     page.content = content;
     
     // Handle status and scheduling
@@ -206,7 +214,7 @@ router.put('/:id', isAuthenticated, async (req, res) => {
       page.status = 'archived';
       page.scheduledFor = null;
     } else {
-      page.status = 'draft';
+      page.status = status;
       page.scheduledFor = null;
     }
 
@@ -237,7 +245,7 @@ router.put('/:id', isAuthenticated, async (req, res) => {
     await Activity.log(req.user._id, 'page_update', `Updated page: ${title}`);
 
     req.flash('success_msg', 'Page updated successfully');
-    res.redirect(`/pages/${page._id}`);
+    res.redirect(`/pages/${page._id}/edit`);
   } catch (error) {
     console.error('Update Page Error:', error);
     req.flash('error_msg', 'Error updating page');

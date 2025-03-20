@@ -30,14 +30,21 @@ title = state;
             </div>
         </div>
 
+        <% if (messages && messages.success_msg && messages.success_msg.length > 0) { %>
+            <div id="success-message" class="border-2 border-neon-green text-white p-4 rounded-lg mb-4 transition-opacity duration-500" data-timeout="<%= settings.messageTimeout || 5000 %>">
+                <%= messages.success_msg %>
+            </div>
+        <% } %>
+        <% if (messages && messages.error_msg && messages.error_msg.length > 0) { %>
+            <div id="error-message" class="border-2 border-neon-pink text-white p-4 rounded-lg mb-4 transition-opacity duration-500" data-timeout="<%= settings.messageTimeout || 5000 %>">
+                <%= messages.error_msg %>
+            </div>
+        <% } %>
+
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <!-- Editor Form -->
             <div class="space-y-6">
-                <form id="pageForm" action="<%= typeof page !== 'undefined' ? `/pages/${page._id}` : '/pages' %>" method="POST">
-                    <% if (typeof page !== 'undefined') { %>
-                        <input type="hidden" name="_method" value="PUT">
-                    <% } %>
-
+                <form id="pageForm" action="<%= typeof page !== 'undefined' ? `/pages/${page._id}?_method=PUT` : '/pages' %>" method="POST">
                     <!-- Basic Information -->
                     <div class="card p-4">
                         <h3 class="text-lg font-semibold text-white mb-4">Basic Information</h3>
@@ -48,12 +55,6 @@ title = state;
                                     class="input bg-[#222222] border-dark-600 text-white w-full"
                                     value="<%= typeof page !== 'undefined' ? page.title : '' %>"
                                     placeholder="Enter page title">
-                            </div>
-                            <div>
-                                <label for="description" class="label">Description</label>
-                                <textarea id="description" name="description" required
-                                    class="input bg-[#222222] border-dark-600 text-white w-full h-32"
-                                    placeholder="Enter page description"><%= typeof page !== 'undefined' ? page.description : '' %></textarea>
                             </div>
                             <div>
                                 <label for="content" class="label">Content</label>
@@ -146,107 +147,43 @@ title = state;
 
             <!-- Live Preview -->
             <div class="card p-4">
-                <h3 class="text-lg font-semibold text-white mb-4">Live Preview</h3>
+                <h3 class="text-lg font-semibold text-white mb-4">Preview</h3>
                 <div id="preview" class="w-full h-[600px] rounded-lg overflow-hidden">
-                    <iframe id="previewFrame" class="w-full h-full" frameborder="0"></iframe>
+                    <iframe id="previewFrame" class="w-full h-full" frameborder="0" 
+                        src="<%= typeof page !== 'undefined' ? `/pages/${page._id}/preview` : '' %>">
+                    </iframe>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<%- contentFor('scripts') %>
 <script>
-    // Preview functionality
-    const previewButton = document.getElementById('previewButton');
-    const previewFrame = document.getElementById('previewFrame');
-    const form = document.getElementById('pageForm');
-    let previewTimeout;
-
-    // Function to get form data as an object
-    function getFormData() {
-        const formData = new FormData(form);
-        const data = Object.fromEntries(formData.entries());
-        
-        // Handle nested design object
-        const designData = {};
-        Object.keys(data).forEach(key => {
-            if (key.startsWith('design[')) {
-                const designKey = key.replace('design[', '').replace(']', '');
-                designData[designKey] = data[key];
-                delete data[key];
-            }
-        });
-        data.design = designData;
-        return data;
-    }
-
-    // Function to update live preview
-    function updatePreview() {
-        // Clear any existing timeout
-        if (previewTimeout) {
-            clearTimeout(previewTimeout);
-        }
-
-        // Set a new timeout to update the preview after a short delay
-        previewTimeout = setTimeout(() => {
-            const data = getFormData();
-            const previewUrl = `/api/preview?${new URLSearchParams(data)}`;
-            previewFrame.src = previewUrl;
-        }, 300); // Wait 300ms after the last change before updating
-    }
-
-    // Update preview when form fields change
-    form.addEventListener('input', updatePreview);
-    form.addEventListener('change', updatePreview);
-
-    // Handle preview button click
-    previewButton.addEventListener('click', () => {
-        const pageId = '<%= typeof page !== "undefined" ? page._id : "" %>';
-        if (pageId) {
-            // For existing pages, open the preview route
-            window.open(`/pages/${pageId}/preview`, '_blank');
-        } else {
-            // For new pages, submit form data to preview route
-            const data = getFormData();
-            const previewUrl = `/api/preview?${new URLSearchParams(data)}`;
-            window.open(previewUrl, '_blank');
-        }
-    });
-
-    // Handle publish type changes
     document.addEventListener('DOMContentLoaded', function() {
-        const publishTypeSelect = document.getElementById('publishType');
-        const scheduleDateContainer = document.getElementById('scheduleDateContainer');
-        const statusSelect = document.getElementById('status');
-
-        // Function to update schedule container visibility
-        function updateScheduleVisibility() {
-            const isScheduled = publishTypeSelect.value === 'schedule';
-            scheduleDateContainer.classList.toggle('hidden', !isScheduled);
-            
-            // Update status based on publish type
-            if (isScheduled) {
-                statusSelect.value = 'draft';
-                statusSelect.disabled = true;
-            } else {
-                statusSelect.disabled = false;
-            }
-        }
-
-        // Initial state
-        updateScheduleVisibility();
-
-        // Listen for changes
-        publishTypeSelect.addEventListener('change', updateScheduleVisibility);
-        statusSelect.addEventListener('change', function() {
-            if (this.value === 'archived') {
-                publishTypeSelect.value = 'now';
-                updateScheduleVisibility();
+        const successMessage = document.getElementById('success-message');
+        const errorMessage = document.getElementById('error-message');
+        const previewButton = document.getElementById('previewButton');
+        const previewFrame = document.getElementById('previewFrame');
+        
+        // Handle preview button click
+        previewButton.addEventListener('click', function() {
+            const previewUrl = previewFrame.getAttribute('src');
+            if (previewUrl) {
+                window.open(previewUrl, '_blank');
             }
         });
+        
+        function fadeOutAndRemove(element) {
+            if (!element) return;
+            const timeout = parseInt(element.getAttribute('data-timeout')) || 5000;
+            
+            setTimeout(() => {
+                element.style.opacity = '0';
+                setTimeout(() => element.remove(), 500);
+            }, timeout);
+        }
 
-        // Initial preview load
-        updatePreview();
+        fadeOutAndRemove(successMessage);
+        fadeOutAndRemove(errorMessage);
     });
-</script> 
+</script>

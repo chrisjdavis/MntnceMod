@@ -17,10 +17,6 @@ const maintenancePageSchema = new mongoose.Schema({
     unique: true,
     trim: true
   },
-  description: {
-    type: String,
-    trim: true
-  },
   content: {
     type: String,
     required: true

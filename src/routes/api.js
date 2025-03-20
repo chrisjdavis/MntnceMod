@@ -11,7 +11,6 @@ const eventEmitter = require('../utils/eventEmitter');
 // Validation middleware
 const validatePage = [
     body('title').trim().notEmpty().withMessage('Title is required'),
-    body('description').trim().notEmpty().withMessage('Description is required'),
     body('status').isIn(['operational', 'degraded', 'down', 'maintenance']).withMessage('Invalid status'),
     body('design.backgroundColor').optional().matches(/^#[0-9A-Fa-f]{6}$/).withMessage('Invalid background color'),
     body('design.textColor').optional().matches(/^#[0-9A-Fa-f]{6}$/).withMessage('Invalid text color'),
@@ -184,26 +183,46 @@ router.get('/admin/analytics', isAdmin, async (req, res) => {
     }
 });
 
-// Preview API Endpoint
-router.get('/preview', isAuthenticated, async (req, res) => {
+// Preview route for live preview
+router.get('/preview', (req, res) => {
+  try {
+    const { title, content, status, design } = req.query;
+    
+    // Parse the design object from the query string
+    let designData = {};
     try {
-        const { title, description, status, design } = req.query;
-        res.render('preview', {
-            title,
-            description,
-            status,
-            design: {
-                backgroundColor: design?.backgroundColor || '#000000',
-                textColor: design?.textColor || '#ffffff',
-                fontFamily: design?.fontFamily || 'Inter',
-                layout: design?.layout || 'centered',
-                logo: design?.logo || ''
-            },
-            layout: false
-        });
-    } catch (error) {
-        res.status(500).json({ error: 'Failed to generate preview' });
+      designData = JSON.parse(design);
+    } catch (e) {
+      console.error('Error parsing design data:', e);
     }
+
+    // Create preview data object
+    const previewData = {
+      title: title || 'Untitled Page',
+      content: content || '',
+      status: status || 'draft',
+      design: {
+        backgroundColor: designData.backgroundColor || '#000000',
+        textColor: designData.textColor || '#ffffff',
+        fontFamily: designData.fontFamily || 'Inter',
+        layout: designData.layout || 'centered',
+        logo: designData.logo || '',
+        maxWidth: designData.maxWidth || 768,
+        logoSize: {
+          width: designData.logoSize?.width || 200,
+          height: designData.logoSize?.height || 50
+        },
+        customCSS: designData.customCSS || ''
+      },
+      updatedAt: new Date()
+    };
+
+    // Render the preview template without the default layout
+    res.render('preview', { ...previewData, layout: false });
+  } catch (error) {
+    console.error('Preview Error:', error);
+    res.status(500).json({ error: 'Error generating preview' });
+  }
 });
 
 // SSE endpoint for real-time updates

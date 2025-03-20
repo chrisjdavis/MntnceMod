@@ -4,111 +4,106 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><%= title %></title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Roboto:wght@400;500;700&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto:wght@400;500;700&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --page-bg: <%= design?.backgroundColor || '#000000' %>;
+            --page-text: <%= design?.textColor || '#ffffff' %>;
+            --page-font: '<%= design?.fontFamily || "Inter" %>';
+            --page-max-width: <%= design?.maxWidth || 768 %>px;
+        }
+
         body {
             margin: 0;
             padding: 0;
+            font-family: var(--page-font), sans-serif;
+            background-color: var(--page-bg);
+            color: var(--page-text);
             min-height: 100vh;
-            font-family: <%= design.fontFamily %>, system-ui, sans-serif;
-            background-color: <%= design.backgroundColor %>;
-            color: <%= design.textColor %>;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: top;
         }
 
         .container {
-            max-width: 1200px;
-            margin: 0 auto;
+            max-width: var(--page-max-width);
+            width: 100%;
             padding: 2rem;
-            <% if (design.layout === 'centered') { %>
-                text-align: center;
-            <% } else if (design.layout === 'right-aligned') { %>
-                text-align: right;
-            <% } %>
+            box-sizing: border-box;
+            text-align: <%= design?.layout === 'left-aligned' ? 'left' : design?.layout === 'right-aligned' ? 'right' : 'center' %>;
         }
 
         .logo {
-            max-width: 200px;
             margin-bottom: 2rem;
-            <% if (design.layout === 'centered') { %>
-                margin-left: auto;
-                margin-right: auto;
-            <% } else if (design.layout === 'right-aligned') { %>
-                margin-left: auto;
-            <% } %>
+            max-width: <%= design?.logoSize?.width || 200 %>px;
+            height: auto;
         }
 
-        .status-badge {
-            display: inline-block;
-            padding: 0.5rem 1rem;
-            border-radius: 9999px;
+        .status {
+            font-size: 1.5rem;
             font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            margin: 1rem 0;
+            margin-bottom: 1rem;
+            text-transform: capitalize;
         }
 
-        .status-operational {
-            background-color: rgba(34, 197, 94, 0.2);
-            color: rgb(34, 197, 94);
-        }
-
-        .status-degraded {
-            background-color: rgba(234, 179, 8, 0.2);
-            color: rgb(234, 179, 8);
-        }
-
-        .status-down {
-            background-color: rgba(239, 68, 68, 0.2);
-            color: rgb(239, 68, 68);
-        }
-
-        .status-maintenance {
-            background-color: rgba(59, 130, 246, 0.2);
-            color: rgb(59, 130, 246);
-        }
+        .status.operational { color: #10B981; }
+        .status.maintenance { color: #F59E0B; }
+        .status.degraded { color: #F59E0B; }
+        .status.down { color: #EF4444; }
 
         .title {
-            font-size: 2.25rem;
-            font-weight: 600;
-            margin: 1rem 0;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
         }
 
         .description {
-            font-size: 1.125rem;
-            line-height: 1.75;
+            font-size: 1.25rem;
+            margin-bottom: 2rem;
             opacity: 0.9;
-            max-width: 65ch;
-            <% if (design.layout === 'centered') { %>
-                margin-left: auto;
-                margin-right: auto;
-            <% } else if (design.layout === 'right-aligned') { %>
-                margin-left: auto;
-            <% } %>
+        }
+
+        .content {
+            font-size: 1.125rem;
+            line-height: 1.6;
+            margin-bottom: 2rem;
+            white-space: pre-wrap;
         }
 
         .timestamp {
-            margin-top: 2rem;
             font-size: 0.875rem;
             opacity: 0.7;
+            margin-top: 2rem;
         }
+
+        <% if (design?.customCSS) { %>
+            <%- design.customCSS %>
+        <% } %>
     </style>
 </head>
 <body>
     <div class="container">
-        <% if (design.logo) { %>
+        <% if (design?.logo) { %>
             <img src="<%= design.logo %>" alt="Logo" class="logo">
         <% } %>
 
-        <div class="status-badge status-<%= status %>">
+        <div class="status status-<%= status %>">
             <%= status.charAt(0).toUpperCase() + status.slice(1) %>
         </div>
 
         <h1 class="title"><%= title %></h1>
         
-        <p class="description"><%= description %></p>
+        <% if (description) { %>
+            <p class="description"><%= description %></p>
+        <% } %>
+
+        <% if (content) { %>
+            <div class="content"><%= content %></div>
+        <% } %>
 
         <div class="timestamp">
-            Last updated: <%= new Date().toLocaleString() %>
+            Last updated: <%= new Date(updatedAt).toLocaleString() %>
         </div>
     </div>
 </body>
