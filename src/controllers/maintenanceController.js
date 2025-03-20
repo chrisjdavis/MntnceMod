@@ -1,6 +1,16 @@
 const cloudflare = require('../services/cloudflare');
 const MaintenancePage = require('../models/MaintenancePage');
 
+exports.getPages = async (req, res) => {
+  try {
+    const pages = await MaintenancePage.find({ user: req.user._id });
+    res.json({ pages });
+  } catch (error) {
+    console.error('Error fetching maintenance pages:', error);
+    res.status(500).json({ error: 'Failed to fetch maintenance pages' });
+  }
+};
+
 exports.deployPage = async (req, res) => {
   try {
     const { 
@@ -30,6 +40,9 @@ exports.deployPage = async (req, res) => {
       design,
       isActive: isActive || true
     });
+
+    // Initialize Cloudflare client with user's credentials
+    await cloudflare.initializeForUser(req.user._id);
 
     // Deploy to Cloudflare
     await cloudflare.deployMaintenancePage(domain, page);
@@ -79,6 +92,9 @@ exports.updatePage = async (req, res) => {
       return res.status(404).json({ error: 'Page not found' });
     }
 
+    // Initialize Cloudflare client with user's credentials
+    await cloudflare.initializeForUser(req.user._id);
+
     // Update in Cloudflare
     await cloudflare.updateMaintenancePage(page.domain, page);
 
@@ -100,26 +116,19 @@ exports.deletePage = async (req, res) => {
       return res.status(404).json({ error: 'Page not found' });
     }
 
+    // Initialize Cloudflare client with user's credentials
+    await cloudflare.initializeForUser(req.user._id);
+
     // Delete from Cloudflare first
     await cloudflare.deleteMaintenancePage(page.domain);
 
     // Delete from database
-    await page.remove();
+    await MaintenancePage.deleteOne({ _id: id, user: req.user._id });
 
     res.json({ success: true });
   } catch (error) {
     console.error('Error deleting maintenance page:', error);
     res.status(500).json({ error: 'Failed to delete maintenance page' });
-  }
-};
-
-exports.getPages = async (req, res) => {
-  try {
-    const pages = await MaintenancePage.find({ user: req.user._id });
-    res.json({ pages });
-  } catch (error) {
-    console.error('Error fetching maintenance pages:', error);
-    res.status(500).json({ error: 'Failed to fetch maintenance pages' });
   }
 };
 

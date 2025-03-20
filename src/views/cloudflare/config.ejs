@@ -1,0 +1,88 @@
+<%
+title = 'Cloudflare Configuration';
+%>
+<%- contentFor('body') %>
+
+<div class="container mx-auto px-4 py-8">
+  <div class="max-w-3xl mx-auto">
+    <div class="flex justify-between items-center mb-8">
+      <h1 class="text-3xl font-bold text-white">Cloudflare Configuration</h1>
+      <a href="/dashboard" class="text-blue-400 hover:text-blue-300">
+        Back to Dashboard
+      </a>
+    </div>
+
+    <div class="bg-gray-800 rounded-lg shadow-md p-6">
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="text-xl font-semibold text-white">Current Configuration</h2>
+        <div class="flex space-x-4">
+          <button id="testConfig" class="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-9 px-3">
+            Test Connection
+          </button>
+          <form action="/cloudflare/delete" method="POST" class="inline">
+            <button type="submit" class="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-9 px-3 text-red-400 hover:text-red-300"
+              onclick="return confirm('Are you sure you want to delete your Cloudflare configuration? This will affect all maintenance pages.')">
+              Delete Configuration
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <div class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-400">Email</label>
+          <p class="mt-1 text-white"><%= config.email %></p>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-400">Account ID</label>
+          <p class="mt-1 text-white"><%= config.accountId %></p>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-400">Zone ID</label>
+          <p class="mt-1 text-white"><%= config.zoneId %></p>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-400">KV Namespace ID</label>
+          <p class="mt-1 text-white"><%= config.kvNamespaceId %></p>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-400">Worker Name</label>
+          <p class="mt-1 text-white"><%= config.workerName %></p>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-400">Last Used</label>
+          <p class="mt-1 text-white"><%= new Date(config.lastUsed).toLocaleString() %></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- contentFor('scripts') %>
+<script>
+document.getElementById('testConfig').addEventListener('click', async () => {
+  try {
+    const response = await fetch('/cloudflare/test', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+    
+    const data = await response.json();
+    
+    if (data.success) {
+      alert('Cloudflare configuration is valid!');
+    } else {
+      alert('Error testing Cloudflare configuration: ' + data.error);
+    }
+  } catch (error) {
+    alert('Error testing Cloudflare configuration: ' + error.message);
+  }
+});
+</script> 

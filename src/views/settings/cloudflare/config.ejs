@@ -1,0 +1,115 @@
+<%
+title = 'Cloudflare Configuration';
+%>
+<%- contentFor('body') %>
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <div class="md:flex md:items-center md:justify-between">
+    <div class="px-4 py-5 sm:px-0">
+      <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Cloudflare Configuration</h1>
+      <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Manage your Cloudflare settings for maintenance pages</p>
+    </div>
+  </div>
+
+  <%- include('../../partials/messages') %>
+  <%- include('../../partials/tabs') %>
+
+  <div class="space-y-4 border rounded-lg p-4">
+    <div>
+      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Email</label>
+      <div class="mt-1 text-sm text-gray-900 dark:text-white"><%= config.email %></div>
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Account ID</label>
+      <div class="mt-1 text-sm text-gray-900 dark:text-white"><%= config.accountId %></div>
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Zone ID</label>
+      <div class="mt-1 text-sm text-gray-900 dark:text-white"><%= config.zoneId %></div>
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">KV Namespace ID</label>
+      <div class="mt-1 text-sm text-gray-900 dark:text-white"><%= config.kvNamespaceId %></div>
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Worker Name</label>
+      <div class="mt-1 text-sm text-gray-900 dark:text-white"><%= config.workerName %></div>
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Last Used</label>
+      <div class="mt-1 text-sm text-gray-900 dark:text-white">
+        <%= new Date(config.lastUsed).toLocaleString() %>
+      </div>
+    </div>
+  </div>
+
+  <div class="mt-6 flex space-x-3">
+    <button id="testConnection" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+      Test Connection
+    </button>
+
+    <form action="/settings/cloudflare/delete" method="POST" class="inline-block">
+      <input type="hidden" name="_csrf" value="<%= locals.csrfToken %>">
+      <button type="submit" onclick="return confirm('Are you sure you want to delete your Cloudflare configuration?')" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+        Delete Configuration
+      </button>
+    </form>
+  </div>
+</div>
+
+<%- contentFor('scripts') %>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const testButton = document.getElementById('testConnection');
+  if (!testButton) {
+    console.error('Test connection button not found');
+    return;
+  }
+
+  testButton.addEventListener('click', async function() {
+    const button = this;
+    const originalText = button.textContent;
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+    
+    try {
+      button.disabled = true;
+      button.textContent = 'Testing...';
+      
+      console.log('Sending test request...');
+      const response = await fetch('/settings/cloudflare/test', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'CSRF-Token': csrfToken
+        },
+        credentials: 'same-origin'
+      });
+      
+      console.log('Response status:', response.status);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      console.log('Response data:', data);
+      
+      if (data.success) {
+        alert('Connection successful! Your Cloudflare configuration is working correctly.');
+      } else {
+        alert('Connection failed: ' + (data.error || 'Unknown error'));
+      }
+    } catch (error) {
+      console.error('Error testing connection:', error);
+      alert('Error testing connection: ' + error.message);
+    } finally {
+      button.disabled = false;
+      button.textContent = originalText;
+    }
+  });
+});
+</script> 

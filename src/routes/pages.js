@@ -4,7 +4,7 @@ const { isAuthenticated } = require('../middleware/auth');
 const Page = require('../models/MaintenancePage');
 const Activity = require('../models/Activity');
 const User = require('../models/User');
-const CloudflareService = require('../services/CloudflareService');
+const cloudflare = require('../services/cloudflare');
 
 // List all pages
 router.get('/', isAuthenticated, async (req, res) => {
@@ -289,7 +289,13 @@ router.delete('/:id', isAuthenticated, async (req, res) => {
       return res.redirect('/pages');
     }
 
-    await page.remove();
+    // Delete from Cloudflare if deployed
+    if (page.domain) {
+      await cloudflare.deleteMaintenancePage(page.domain);
+    }
+
+    // Delete from database
+    await Page.deleteOne({ _id: req.params.id, user: req.user._id });
 
     // Log activity
     await Activity.log(req.user._id, 'page_delete', `Deleted page: ${page.title}`);
@@ -414,26 +420,28 @@ router.post('/:id/deploy', isAuthenticated, async (req, res) => {
   try {
     const page = await Page.findOne({ _id: req.params.id, user: req.user._id });
     if (!page) {
-      req.flash('error_msg', 'Page not found');
+      req.flash('error', 'Page not found');
       return res.redirect('/pages');
     }
 
-    // Deploy to Cloudflare
     const cloudflareService = new CloudflareService(req.user);
     await cloudflareService.deployPage(page);
 
-    // Update page status
+    // Update page status to deployed
     page.deployed = true;
     await page.save();
 
     // Log activity
-    await Activity.log(req.user._id, 'page_deploy', `Deployed page to Cloudflare: ${page.title}`);
+    await Activity.create({
+      user: req.user._id,
+      action: 'deploy_page',
+      details: `Deployed page: ${page.title}`
+    });
 
-    // Redirect to success page
     res.redirect(`/pages/${page._id}/deploy-success`);
   } catch (error) {
-    console.error('Deploy Page Error:', error);
-    req.flash('error_msg', 'Error deploying page to Cloudflare');
+    console.error('Deploy Error:', error);
+    req.flash('error', 'Failed to deploy page');
     res.redirect(`/pages/${req.params.id}/edit`);
   }
 });
@@ -443,19 +451,16 @@ router.post('/:id/toggle', isAuthenticated, async (req, res) => {
   try {
     const page = await Page.findOne({ _id: req.params.id, user: req.user._id });
     if (!page) {
-      req.flash('error_msg', 'Page not found');
+      req.flash('error', 'Page not found');
       return res.redirect('/pages');
     }
 
     if (!page.deployed) {
-      req.flash('error_msg', 'Page must be deployed before activation');
+      req.flash('error', 'Page must be deployed before activation');
       return res.redirect('/pages');
     }
 
-    // Toggle status between published and draft
     const newStatus = page.status === 'published' ? 'draft' : 'published';
-    
-    // Update Cloudflare
     const cloudflareService = new CloudflareService(req.user);
     await cloudflareService.togglePage(page, newStatus);
 
@@ -464,13 +469,17 @@ router.post('/:id/toggle', isAuthenticated, async (req, res) => {
     await page.save();
 
     // Log activity
-    await Activity.log(req.user._id, 'page_toggle', `${newStatus === 'published' ? 'Activated' : 'Deactivated'} page: ${page.title}`);
+    await Activity.create({
+      user: req.user._id,
+      action: 'toggle_page',
+      details: `${newStatus === 'published' ? 'Activated' : 'Deactivated'} page: ${page.title}`
+    });
 
-    req.flash('success_msg', `Page ${newStatus === 'published' ? 'activated' : 'deactivated'} successfully`);
+    req.flash('success', `Page ${newStatus === 'published' ? 'activated' : 'deactivated'} successfully`);
     res.redirect('/pages');
   } catch (error) {
-    console.error('Toggle Page Error:', error);
-    req.flash('error_msg', 'Error toggling page status');
+    console.error('Toggle Error:', error);
+    req.flash('error', 'Failed to update page status');
     res.redirect('/pages');
   }
 });
