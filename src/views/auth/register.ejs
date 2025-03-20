@@ -3,6 +3,150 @@
 <%- contentFor('body') %>
 <%- include('../partials/messages') %>
 
+<div class="container mx-auto px-4 py-8">
+    <div class="max-w-md mx-auto">
+        <div>
+            <h2 class="mt-6 text-center text-3xl font-extrabold text-foreground">
+                Create your account
+            </h2>
+            <p class="mt-2 text-center text-sm text-muted-foreground">
+                Or
+                <a href="/auth/login" class="font-medium text-primary hover:text-primary/90">
+                    sign in to your account
+                </a>
+            </p>
+        </div>
+
+        <!-- Social Signup -->
+        <div class="grid grid-cols-2 gap-3">
+            <a href="/auth/google" class="inline-flex justify-center items-center gap-2 rounded-md border bg-card text-card-foreground shadow-sm px-4 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground transition-colors">
+                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12.545,10.239v3.821h5.445c-0.712,2.315-2.647,3.972-5.445,3.972c-3.332,0-6.033-2.701-6.033-6.032s2.701-6.032,6.033-6.032c1.498,0,2.866,0.549,3.921,1.453l2.814-2.814C17.503,2.988,15.139,2,12.545,2C7.021,2,2.543,6.477,2.543,12s4.478,10,10.002,10c8.396,0,10.249-7.85,9.426-11.748L12.545,10.239z"/>
+                </svg>
+                Google
+            </a>
+            <a href="/auth/github" class="inline-flex justify-center items-center gap-2 rounded-md border bg-card text-card-foreground shadow-sm px-4 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground transition-colors">
+                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                </svg>
+                GitHub
+            </a>
+        </div>
+
+        <div class="relative">
+            <div class="absolute inset-0 flex items-center">
+                <div class="w-full border-t"></div>
+            </div>
+            <div class="relative flex justify-center text-sm">
+                <span class="px-2 bg-background text-muted-foreground">Or continue with</span>
+            </div>
+        </div>
+
+        <form class="mt-8 space-y-6" action="/auth/register" method="POST">
+            <% if (typeof error !== 'undefined') { %>
+                <div class="rounded-md bg-destructive/10 p-4 border border-destructive/30">
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <svg class="h-5 w-5 text-destructive" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm text-destructive"><%= error %></p>
+                        </div>
+                    </div>
+                </div>
+            <% } %>
+            <div class="space-y-4">
+                <div class="space-y-2">
+                    <label for="name" class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                        Full name
+                    </label>
+                    <input
+                        id="name"
+                        name="name"
+                        type="text"
+                        required
+                        class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                        placeholder="John Doe"
+                    />
+                </div>
+                <div class="space-y-2">
+                    <label for="email" class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                        Email address
+                    </label>
+                    <input
+                        id="email"
+                        name="email"
+                        type="email"
+                        autocomplete="email"
+                        required
+                        class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                        placeholder="name@example.com"
+                    />
+                </div>
+                <div class="space-y-2">
+                    <label for="password" class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                        Password
+                    </label>
+                    <input
+                        id="password"
+                        name="password"
+                        type="password"
+                        autocomplete="new-password"
+                        required
+                        class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                        placeholder="••••••••"
+                    />
+                </div>
+                <div class="space-y-2">
+                    <label for="password_confirmation" class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                        Confirm password
+                    </label>
+                    <input
+                        id="password_confirmation"
+                        name="password_confirmation"
+                        type="password"
+                        autocomplete="new-password"
+                        required
+                        class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                        placeholder="••••••••"
+                    />
+                </div>
+            </div>
+
+            <div class="flex items-center space-x-2">
+                <input
+                    id="terms"
+                    name="terms"
+                    type="checkbox"
+                    required
+                    class="h-4 w-4 rounded border border-input bg-background text-primary focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                />
+                <label for="terms" class="text-sm text-foreground">
+                    I agree to the
+                    <a href="#" class="text-primary hover:text-primary/90">Terms of Service</a>
+                    and
+                    <a href="#" class="text-primary hover:text-primary/90">Privacy Policy</a>
+                </label>
+            </div>
+
+            <button
+                type="submit"
+                class="inline-flex w-full items-center justify-center rounded-md bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+            >
+                <span class="absolute left-0 inset-y-0 flex items-center pl-3">
+                    <svg class="h-5 w-5 text-primary-foreground/70" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                        <path fill-rule="evenodd" d="M10 1a4.5 4.5 0 00-4.5 4.5V9H5a2 2 0 00-2 2v6a2 2 0 002 2h10a2 2 0 002-2v-6a2 2 0 00-2-2h-.5V5.5A4.5 4.5 0 0010 1zm3 8V5.5a3 3 0 10-6 0V9h6z" clip-rule="evenodd" />
+                    </svg>
+                </span>
+                Create account
+            </button>
+<%- contentFor('title', 'Register') %>
+
+<%- contentFor('body') %>
+<%- include('../partials/messages') %>
+
 <div class="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-[#0a0a0a] py-12 px-4 sm:px-6 lg:px-8">
     <div class="max-w-md w-full space-y-8">
         <div>

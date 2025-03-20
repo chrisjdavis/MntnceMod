@@ -1,0 +1,26 @@
+<%
+  // Define the available tabs and their routes
+  const tabs = [
+    { name: 'Overview', path: '/dashboard' },
+    { name: 'Pages', path: '/pages' },
+  ];
+
+  // Get the current path to determine active tab
+  const currentPath = locals.currentPath || '';
+%>
+<div class="mb-8">
+  <div>
+    <div class="flex h-10 items-center space-x-4 text-sm">
+      <% tabs.forEach(tab => { 
+        const isActive = currentPath.startsWith(tab.path);
+      %>
+        <a 
+          href="<%= tab.path %>" 
+          class="inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border-b-2 <%= isActive ? 'border-primary text-primary' : 'border-transparent hover:text-foreground/80' %>"
+        >
+          <%= tab.name %>
+        </a>
+      <% }); %>
+    </div>
+  </div>
+</div> 

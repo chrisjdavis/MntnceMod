@@ -4,6 +4,7 @@ const { isAuthenticated } = require('../middleware/auth');
 const Page = require('../models/MaintenancePage');
 const Activity = require('../models/Activity');
 const User = require('../models/User');
+const CloudflareService = require('../services/CloudflareService');
 
 // List all pages
 router.get('/', isAuthenticated, async (req, res) => {
@@ -41,7 +42,7 @@ router.get('/new', isAuthenticated, async (req, res) => {
       }
       return res.redirect('/pages');
     }
-    res.render('page-editor', {
+    res.render('pages/new', {
       user: req.user,
       active: 'pages',
       messages: {
@@ -59,7 +60,7 @@ router.get('/new', isAuthenticated, async (req, res) => {
 // Create new page
 router.post('/', isAuthenticated, async (req, res) => {
   try {
-    const { title, description, content, status, design, publishType, scheduledFor } = req.body;
+    const { title, description, content, status, design, scheduledFor, domain } = req.body;
 
     // Check if user can create more pages
     const canCreatePage = await req.user.canCreatePage();
@@ -68,12 +69,29 @@ router.post('/', isAuthenticated, async (req, res) => {
       return res.redirect('/pages');
     }
 
+    // Validate scheduled date if status is scheduled
+    if (status === 'scheduled') {
+      if (!scheduledFor) {
+        req.flash('error_msg', 'Please select a date and time for scheduling.');
+        return res.redirect('/pages/new');
+      }
+
+      const scheduledDate = new Date(scheduledFor);
+      if (scheduledDate <= new Date()) {
+        req.flash('error_msg', 'Scheduled date must be in the future.');
+        return res.redirect('/pages/new');
+      }
+    }
+
     // Create new page
     const page = new Page({
       title,
-      description,
+      description: description || '',
       content,
+      domain,
       user: req.user._id,
+      status: status || 'draft',
+      scheduledFor: status === 'scheduled' ? new Date(scheduledFor) : null,
       design: {
         backgroundColor: design?.backgroundColor || '#000000',
         textColor: design?.textColor || '#ffffff',
@@ -88,24 +106,6 @@ router.post('/', isAuthenticated, async (req, res) => {
         customCSS: design?.customCSS || ''
       }
     });
-
-    // Handle status and scheduling
-    if (publishType === 'schedule' && scheduledFor) {
-      page.status = 'scheduled';
-      page.scheduledFor = new Date(scheduledFor);
-    } else if (publishType === 'now') {
-      page.status = 'published';
-      page.scheduledFor = null;
-    } else if (status === 'archived') {
-      page.status = 'archived';
-      page.scheduledFor = null;
-    } else {
-      page.status = 'draft';
-      page.scheduledFor = null;
-    }
-
-    // Generate slug
-    page.slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
 
     await page.save();
 
@@ -171,7 +171,7 @@ router.get('/:id/edit', isAuthenticated, async (req, res) => {
     // Ensure content exists
     pageData.content = pageData.content || '';
 
-    res.render('page-editor', { 
+    res.render('pages/edit', { 
       page: pageData,
       user: req.user,
       active: 'pages',
@@ -191,7 +191,7 @@ router.get('/:id/edit', isAuthenticated, async (req, res) => {
 router.put('/:id', isAuthenticated, async (req, res) => {
   try {
     const pageData = typeof req.body.data === 'string' ? JSON.parse(req.body.data) : req.body;
-    const { title, content, status, design, publishType, scheduledFor } = pageData;
+    const { title, content, status, design, scheduledFor, domain, description } = pageData;
 
     const page = await Page.findOne({ _id: req.params.id, user: req.user._id });
     if (!page) {
@@ -199,25 +199,28 @@ router.put('/:id', isAuthenticated, async (req, res) => {
       return res.redirect('/pages');
     }
 
+    // Validate scheduled date if status is scheduled
+    if (status === 'scheduled') {
+      if (!scheduledFor) {
+        req.flash('error_msg', 'Please select a date and time for scheduling.');
+        return res.redirect(`/pages/${page._id}/edit`);
+      }
+
+      const scheduledDate = new Date(scheduledFor);
+      if (scheduledDate <= new Date()) {
+        req.flash('error_msg', 'Scheduled date must be in the future.');
+        return res.redirect(`/pages/${page._id}/edit`);
+      }
+    }
+
     // Update basic fields
     page.title = title;
     page.content = content;
+    page.domain = domain;
+    page.description = description || '';
+    page.status = status || 'draft';
+    page.scheduledFor = status === 'scheduled' ? new Date(scheduledFor) : null;
     
-    // Handle status and scheduling
-    if (publishType === 'schedule' && scheduledFor) {
-      page.status = 'scheduled';
-      page.scheduledFor = new Date(scheduledFor);
-    } else if (publishType === 'now') {
-      page.status = 'published';
-      page.scheduledFor = null;
-    } else if (status === 'archived') {
-      page.status = 'archived';
-      page.scheduledFor = null;
-    } else {
-      page.status = status;
-      page.scheduledFor = null;
-    }
-
     // Ensure slug exists
     if (!page.slug) {
       page.slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
@@ -403,6 +406,89 @@ router.post('/:id/view', async (req, res) => {
   } catch (error) {
     console.error('Track View Error:', error);
     res.status(500).json({ error: 'Error tracking view' });
+  }
+});
+
+// Deploy page to Cloudflare
+router.post('/:id/deploy', isAuthenticated, async (req, res) => {
+  try {
+    const page = await Page.findOne({ _id: req.params.id, user: req.user._id });
+    if (!page) {
+      req.flash('error_msg', 'Page not found');
+      return res.redirect('/pages');
+    }
+
+    // Deploy to Cloudflare
+    const cloudflareService = new CloudflareService(req.user);
+    await cloudflareService.deployPage(page);
+
+    // Update page status
+    page.deployed = true;
+    await page.save();
+
+    // Log activity
+    await Activity.log(req.user._id, 'page_deploy', `Deployed page to Cloudflare: ${page.title}`);
+
+    // Redirect to success page
+    res.redirect(`/pages/${page._id}/deploy-success`);
+  } catch (error) {
+    console.error('Deploy Page Error:', error);
+    req.flash('error_msg', 'Error deploying page to Cloudflare');
+    res.redirect(`/pages/${req.params.id}/edit`);
+  }
+});
+
+// Toggle page activation
+router.post('/:id/toggle', isAuthenticated, async (req, res) => {
+  try {
+    const page = await Page.findOne({ _id: req.params.id, user: req.user._id });
+    if (!page) {
+      req.flash('error_msg', 'Page not found');
+      return res.redirect('/pages');
+    }
+
+    if (!page.deployed) {
+      req.flash('error_msg', 'Page must be deployed before activation');
+      return res.redirect('/pages');
+    }
+
+    // Toggle status between published and draft
+    const newStatus = page.status === 'published' ? 'draft' : 'published';
+    
+    // Update Cloudflare
+    const cloudflareService = new CloudflareService(req.user);
+    await cloudflareService.togglePage(page, newStatus);
+
+    // Update page status
+    page.status = newStatus;
+    await page.save();
+
+    // Log activity
+    await Activity.log(req.user._id, 'page_toggle', `${newStatus === 'published' ? 'Activated' : 'Deactivated'} page: ${page.title}`);
+
+    req.flash('success_msg', `Page ${newStatus === 'published' ? 'activated' : 'deactivated'} successfully`);
+    res.redirect('/pages');
+  } catch (error) {
+    console.error('Toggle Page Error:', error);
+    req.flash('error_msg', 'Error toggling page status');
+    res.redirect('/pages');
+  }
+});
+
+// Show deployment success page
+router.get('/:id/deploy-success', isAuthenticated, async (req, res) => {
+  try {
+    const page = await Page.findOne({ _id: req.params.id, user: req.user._id });
+    if (!page) {
+      req.flash('error_msg', 'Page not found');
+      return res.redirect('/pages');
+    }
+
+    res.render('pages/deploy-success', { page });
+  } catch (error) {
+    console.error('Deploy Success Page Error:', error);
+    req.flash('error_msg', 'Error loading deployment success page');
+    res.redirect('/pages');
   }
 });
 

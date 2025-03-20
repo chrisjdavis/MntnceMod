@@ -6,91 +6,105 @@ title = 'Edit Page';
 <div class="container mx-auto px-4 py-8">
   <div class="max-w-3xl mx-auto">
     <div class="flex justify-between items-center mb-8">
-      <h1 class="text-3xl font-bold text-gray-900">Edit Page</h1>
-      <a href="/pages" class="text-gray-600 hover:text-gray-800">
+      <h1 class="text-3xl font-bold text-white">Edit Page</h1>
+      <a href="/pages" class="text-blue-400 hover:text-blue-300">
         Back to Pages
       </a>
     </div>
 
-    <form action="/pages/<%= page._id %>?_method=PUT" method="POST" class="bg-white rounded-lg shadow-md p-6">
+    <form action="/pages/<%= page._id %>?_method=PUT" method="POST" class="border rounded-lg shadow-md p-6">
       <!-- Basic Information -->
       <div class="mb-8">
-        <h2 class="text-xl font-semibold text-gray-900 mb-4">Basic Information</h2>
+        <h2 class="text-xl font-semibold text-white mb-4">Basic Information</h2>
         
         <div class="mb-6">
-          <label for="title" class="block text-sm font-medium text-gray-700 mb-2">Page Title</label>
-          <input type="text" id="title" name="title" value="<%= page.title %>" required
-            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-black">
+          <label for="domain" class="block text-sm font-medium text-gray-400 mb-2">Domain</label>
+          <input type="text" id="domain" name="domain" value="<%= page.domain %>" required
+            class="w-full px-3 py-2 bg-black border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
+            placeholder="example.com">
+          <p class="mt-1 text-sm text-gray-500">The domain where this maintenance page will be displayed.</p>
         </div>
 
         <div class="mb-6">
-          <label for="description" class="block text-sm font-medium text-gray-700 mb-2">Description</label>
+          <label for="title" class="block text-sm font-medium text-gray-400 mb-2">Page Title</label>
+          <input type="text" id="title" name="title" value="<%= page.title %>" required
+            class="w-full px-3 py-2 bg-black border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white">
+        </div>
+
+        <div class="mb-6">
+          <label for="description" class="block text-sm font-medium text-gray-400 mb-2">Description</label>
           <textarea id="description" name="description" rows="3"
-            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"><%= page.description %></textarea>
+            class="w-full px-3 py-2 bg-black border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
+            placeholder="Enter a brief description of your status page (optional)"><%= page.description || '' %></textarea>
           <p class="mt-1 text-sm text-gray-500">Optional. A brief description of your status page.</p>
         </div>
 
         <div class="mb-6">
-          <label for="content" class="block text-sm font-medium text-gray-700 mb-2">Page Content</label>
+          <label for="content" class="block text-sm font-medium text-gray-400 mb-2">Page Content</label>
           <textarea id="content" name="content" rows="10" required
-            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"><%= page.content || '' %></textarea>
+            class="w-full px-3 py-2 bg-black border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"><%= page.content || '' %></textarea>
         </div>
 
         <div class="mb-6">
-          <label for="status" class="block text-sm font-medium text-gray-700 mb-2">Status</label>
+          <label for="status" class="block text-sm font-medium text-gray-400 mb-2">Status</label>
           <select id="status" name="status" required
-            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-black">
-            <option value="operational" <%= page.status === 'operational' ? 'selected' : '' %>>Operational</option>
-            <option value="maintenance" <%= page.status === 'maintenance' ? 'selected' : '' %>>Maintenance</option>
-            <option value="degraded" <%= page.status === 'degraded' ? 'selected' : '' %>>Degraded</option>
-            <option value="down" <%= page.status === 'down' ? 'selected' : '' %>>Down</option>
+            class="w-full px-3 py-2 bg-black border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white">
+            <option value="draft" <%= page.status === 'draft' ? 'selected' : '' %>>Draft</option>
+            <option value="published" <%= page.status === 'published' ? 'selected' : '' %>>Published</option>
+            <option value="scheduled" <%= page.status === 'scheduled' ? 'selected' : '' %>>Scheduled</option>
+            <option value="archived" <%= page.status === 'archived' ? 'selected' : '' %>>Archived</option>
           </select>
         </div>
 
-        <div class="mb-6">
-          <div class="flex items-center">
-            <input type="checkbox" id="isPublished" name="isPublished" <%= page.status === 'published' ? 'checked' : '' %>
-              class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
-            <label for="isPublished" class="ml-2 block text-sm text-gray-700">
-              Publish this page
-            </label>
+        <div class="mb-6 <%= page.status === 'scheduled' ? '' : 'hidden' %>" id="schedulingOptions">
+          <label for="scheduledFor" class="block text-sm font-medium text-gray-400 mb-2">Schedule For</label>
+          <div class="relative">
+            <input type="datetime-local" id="scheduledFor" name="scheduledFor" 
+              value="<%= page.scheduledFor ? new Date(page.scheduledFor).toISOString().slice(0, 16) : '' %>"
+              class="w-full px-3 py-2 bg-black border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
+              min="<%= new Date().toISOString().slice(0, 16) %>">
+            <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+              <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd" />
+              </svg>
+            </div>
           </div>
-          <p class="mt-1 text-sm text-gray-500">When published, your page will be publicly accessible.</p>
+          <p class="mt-1 text-sm text-gray-500">When should this page be published?</p>
         </div>
       </div>
 
       <!-- Design Settings -->
       <div class="mb-8">
-        <h2 class="text-xl font-semibold text-gray-900 mb-4">Design Settings</h2>
+        <h2 class="text-xl font-semibold text-white mb-4">Design Settings</h2>
         
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label for="backgroundColor" class="block text-sm font-medium text-gray-700 mb-2">Background Color</label>
+            <label for="backgroundColor" class="block text-sm font-medium text-gray-400 mb-2">Background Color</label>
             <div class="flex items-center space-x-2">
               <input type="color" id="backgroundColor" name="design[backgroundColor]" value="<%= page.design?.backgroundColor || '#000000' %>"
-                class="h-10 w-10 p-1 rounded border border-gray-300">
+                class="h-10 w-10 p-1 rounded border border-dark-600">
               <input type="text" data-color-input="backgroundColor" name="design[backgroundColorText]" value="<%= page.design?.backgroundColor || '#000000' %>"
-                class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
+                class="flex-1 px-3 py-2 bg-black border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
                 pattern="^#[0-9A-Fa-f]{6}$" title="Please enter a valid hex color (e.g., #FF0000)">
             </div>
           </div>
 
           <div>
-            <label for="textColor" class="block text-sm font-medium text-gray-700 mb-2">Text Color</label>
+            <label for="textColor" class="block text-sm font-medium text-gray-400 mb-2">Text Color</label>
             <div class="flex items-center space-x-2">
               <input type="color" id="textColor" name="design[textColor]" value="<%= page.design?.textColor || '#ffffff' %>"
-                class="h-10 w-10 p-1 rounded border border-gray-300">
+                class="h-10 w-10 p-1 rounded border border-dark-600">
               <input type="text" data-color-input="textColor" name="design[textColorText]" value="<%= page.design?.textColor || '#ffffff' %>"
-                class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
+                class="flex-1 px-3 py-2 bg-black border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
                 pattern="^#[0-9A-Fa-f]{6}$" title="Please enter a valid hex color (e.g., #FF0000)">
             </div>
           </div>
         </div>
 
         <div class="mt-6">
-          <label for="fontFamily" class="block text-sm font-medium text-gray-700 mb-2">Font Family</label>
+          <label for="fontFamily" class="block text-sm font-medium text-gray-400 mb-2">Font Family</label>
           <select id="fontFamily" name="design[fontFamily]"
-            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-black">
+            class="w-full px-3 py-2 bg-black border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white">
             <option value="Inter" <%= page.design?.fontFamily === 'Inter' ? 'selected' : '' %>>Inter</option>
             <option value="Roboto" <%= page.design?.fontFamily === 'Roboto' ? 'selected' : '' %>>Roboto</option>
             <option value="Open Sans" <%= page.design?.fontFamily === 'Open Sans' ? 'selected' : '' %>>Open Sans</option>
@@ -98,9 +112,9 @@ title = 'Edit Page';
         </div>
 
         <div class="mt-6">
-          <label for="layout" class="block text-sm font-medium text-gray-700 mb-2">Layout</label>
+          <label for="layout" class="block text-sm font-medium text-gray-400 mb-2">Layout</label>
           <select id="layout" name="design[layout]"
-            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-black">
+            class="w-full px-3 py-2 bg-black border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white">
             <option value="centered" <%= page.design?.layout === 'centered' ? 'selected' : '' %>>Centered</option>
             <option value="left-aligned" <%= page.design?.layout === 'left-aligned' ? 'selected' : '' %>>Left Aligned</option>
             <option value="right-aligned" <%= page.design?.layout === 'right-aligned' ? 'selected' : '' %>>Right Aligned</option>
@@ -108,40 +122,40 @@ title = 'Edit Page';
         </div>
 
         <div class="mt-6">
-          <label for="logo" class="block text-sm font-medium text-gray-700 mb-2">Logo URL</label>
+          <label for="logo" class="block text-sm font-medium text-gray-400 mb-2">Logo URL</label>
           <input type="url" id="logo" name="design[logo]" value="<%= page.design?.logo || '' %>"
-            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
+            class="w-full px-3 py-2 bg-black border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
             placeholder="https://example.com/logo.png">
           <p class="mt-1 text-sm text-gray-500">Optional. Enter the URL of your logo image.</p>
         </div>
 
         <div class="mt-6">
-          <label for="logoWidth" class="block text-sm font-medium text-gray-700 mb-2">Logo Width (px)</label>
+          <label for="logoWidth" class="block text-sm font-medium text-gray-400 mb-2">Logo Width (px)</label>
           <input type="number" id="logoWidth" name="design[logoSize][width]" value="<%= page.design?.logoSize?.width || 200 %>"
-            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
+            class="w-full px-3 py-2 bg-black border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
             min="1" max="1000">
           <p class="mt-1 text-sm text-gray-500">Width of the logo in pixels (1-1000px). Default: 200px</p>
         </div>
 
         <div class="mt-6">
-          <label for="maxWidth" class="block text-sm font-medium text-gray-700 mb-2">Max Page Width (px)</label>
+          <label for="maxWidth" class="block text-sm font-medium text-gray-400 mb-2">Max Page Width (px)</label>
           <input type="number" id="maxWidth" name="design[maxWidth]" value="<%= page.design?.maxWidth || 768 %>"
-            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
+            class="w-full px-3 py-2 bg-black border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
             min="320" max="1920" step="1">
           <p class="mt-1 text-sm text-gray-500">Content maximum width in pixels (320-1920px). Default: 768px</p>
         </div>
 
         <div class="mt-6">
-          <label for="customCSS" class="block text-sm font-medium text-gray-700 mb-2">Custom CSS</label>
+          <label for="customCSS" class="block text-sm font-medium text-gray-400 mb-2">Custom CSS</label>
           <textarea id="customCSS" name="design[customCSS]" rows="4"
-            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-black font-mono text-sm"
+            class="w-full px-3 py-2 bg-black border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white font-mono text-sm"
             placeholder="/* Add your custom CSS here */"><%= page.design?.customCSS || '' %></textarea>
           <p class="mt-1 text-sm text-gray-500">Optional. Add custom CSS to further customize your page.</p>
         </div>
       </div>
 
       <div class="flex justify-end space-x-4">
-        <a href="/pages" class="px-4 py-2 text-gray-700 hover:text-gray-900">
+        <a href="/pages" class="px-4 py-2 text-blue-400 hover:text-blue-300">
           Cancel
         </a>
         <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
@@ -201,6 +215,12 @@ function setupColorInputs(colorId) {
 
 setupColorInputs('backgroundColor');
 setupColorInputs('textColor');
+
+// Handle status change
+document.getElementById('status').addEventListener('change', function(e) {
+  const schedulingOptions = document.getElementById('schedulingOptions');
+  schedulingOptions.classList.toggle('hidden', e.target.value !== 'scheduled');
+});
 
 // Handle form submission
 document.querySelector('form').addEventListener('submit', function(e) {

@@ -3,65 +3,100 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><%= page.title %></title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title><%= page.title %> - Preview</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto:wght@400;500;700&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-      :root {
-        --page-bg: <%= page.design?.backgroundColor || '#000000' %>;
-        --page-text: <%= page.design?.textColor || '#ffffff' %>;
-        --page-font: '<%= page.design?.fontFamily || 'Inter' %>';
-        --page-max-width: <%= page.design?.maxWidth || 768 %>px;
-      }
-      .page-content {
-        background-color: var(--page-bg);
-        color: var(--page-text);
-        font-family: var(--page-font);
-      }
-      .content-container {
-        max-width: var(--page-max-width);
-        margin-left: auto;
-        margin-right: auto;
-      }
+        :root {
+            --bg-color: <%= page.design?.backgroundColor || '#000000' %>;
+            --text-color: <%= page.design?.textColor || '#ffffff' %>;
+            --font-family: <%= page.design?.fontFamily || 'Inter' %>;
+            --max-width: <%= page.design?.maxWidth || 768 %>px;
+        }
+
+        body {
+            font-family: var(--font-family), -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: var(--max-width);
+            margin: 0 auto;
+            padding: 2rem;
+            box-sizing: border-box;
+            text-align: <%= page.design?.layout === 'left-aligned' ? 'left' : page.design?.layout === 'right-aligned' ? 'right' : 'center' %>;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .logo {
+            margin-bottom: 2rem;
+            max-width: <%= page.design?.logoSize?.width || 200 %>px;
+            height: auto;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+
+        .description {
+            font-size: 1.25rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        .content {
+            font-size: 1.125rem;
+            line-height: 1.6;
+            margin-bottom: 2rem;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            font-weight: 500;
+            font-size: 0.875rem;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: var(--text-color);
+        }
+
+        .footer {
+            width: 100%;
+            padding: 1rem;
+            text-align: center;
+            font-size: 0.875rem;
+            opacity: 0.7;
+            margin-top: auto;
+        }
+
+        <%= page.design?.customCSS || '' %>
     </style>
-    <% if (page.design?.customCSS) { %>
-    <style>
-      <%= page.design.customCSS %>
-    </style>
-    <% } %>
 </head>
 <body>
-    <div class="min-h-screen page-content">
-      <div class="content-container px-4 py-8">
-        <div class="<%= page.design?.layout === 'left-aligned' ? 'text-left' : (page.design?.layout === 'right-aligned' ? 'text-right' : 'text-center') %>">
-          <% if (page.design?.logo) { %>
-            <div class="mb-8 <%= page.design?.layout === 'left-aligned' ? '' : (page.design?.layout === 'right-aligned' ? 'flex justify-end' : 'flex justify-center') %>">
-              <img src="<%= page.design.logo %>" 
-                   alt="<%= page.title %> Logo" 
-                   style="width: <%= page.design?.logoSize?.width || 200 %>px; height: <%= page.design?.logoSize?.height || 50 %>px; object-fit: contain;">
-            </div>
-          <% } %>
-
-          <h1 class="text-4xl font-bold mb-4"><%= page.title %></h1>
-          <div class="mb-8 opacity-80">
-            <p class="text-xl"><%= page.description %></p>
-          </div>
-
-          <div class="prose max-w-none" style="color: inherit;">
-            <div class="whitespace-pre-wrap"><%= page.content %></div>
-          </div>
-
-          <div class="mt-8 pt-6 border-t opacity-60 text-sm">
-            Last updated: <%= new Date(page.updatedAt).toLocaleDateString() %>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="fixed bottom-4 right-4">
-      <a href="/pages/<%= page._id %>" class="text-gray-600 hover:text-gray-800 bg-white px-4 py-2 rounded-lg shadow-lg">
-        Back to Page Details
-      </a>
+    <div class="container">
+        <% if (page.design?.logo) { %>
+            <img src="<%= page.design.logo %>" alt="Logo" class="logo">
+        <% } %>
+        
+        <h1><%= page.title %></h1>
+        
+        <% if (page.description) { %>
+            <div class="description"><%= page.description %></div>
+        <% } %>
+        
+        <div class="content"><%= page.content %></div>
+        <div class="content">Last updated: <%= new Date(page.updatedAt).toLocaleString() %></div>
     </div>
 </body>
 </html>

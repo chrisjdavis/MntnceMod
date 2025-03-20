@@ -6,16 +6,20 @@ const maintenancePageSchema = new mongoose.Schema({
     ref: 'User',
     required: true
   },
+  domain: {
+    type: String,
+    required: true,
+    unique: true
+  },
   title: {
     type: String,
     required: true,
     trim: true
   },
-  slug: {
+  description: {
     type: String,
-    required: true,
-    unique: true,
-    trim: true
+    trim: true,
+    default: ''
   },
   content: {
     type: String,
@@ -23,28 +27,61 @@ const maintenancePageSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['draft', 'published', 'archived', 'scheduled'],
+    enum: ['draft', 'published', 'scheduled', 'archived'],
     default: 'draft'
+  },
+  deployed: {
+    type: Boolean,
+    default: false
   },
   scheduledFor: {
     type: Date
   },
-  message: String,
-  customDomain: String,
   design: {
-    type: Object,
-    default: {
-      backgroundColor: '#000000',
-      textColor: '#ffffff',
-      fontFamily: 'Inter',
-      layout: 'centered',
-      logo: '',
-      maxWidth: 768,
-      logoSize: {
-        width: 200,
-        height: 50
+    backgroundColor: {
+      type: String,
+      default: '#000000'
+    },
+    textColor: {
+      type: String,
+      default: '#ffffff'
+    },
+    fontFamily: {
+      type: String,
+      default: 'Inter'
+    },
+    layout: {
+      type: String,
+      enum: ['centered', 'left-aligned', 'right-aligned'],
+      default: 'centered'
+    },
+    logo: {
+      type: String,
+      default: ''
+    },
+    maxWidth: {
+      type: Number,
+      default: 768,
+      min: 320,
+      max: 1920
+    },
+    logoSize: {
+      width: {
+        type: Number,
+        default: 200,
+        min: 1,
+        max: 1000
       },
-      customCSS: ''
+      height: {
+        type: Number,
+        default: 50,
+        min: 1,
+        max: 1000
+      }
+    },
+    customCSS: {
+      type: String,
+      default: ''
     }
   },
   analytics: {
@@ -52,29 +89,15 @@ const maintenancePageSchema = new mongoose.Schema({
       type: Number,
       default: 0
     },
-    uniqueVisitors: {
+    uniqueViews: {
       type: Number,
       default: 0
-    },
-    lastUpdated: {
-      type: Date,
-      default: Date.now
-    },
-    viewsByDate: [{
-      date: Date,
-      count: Number
-    }],
-    visitorsByDate: [{
-      date: Date,
-      count: Number
-    }]
+    }
   },
-  views: {
-    type: Number,
-    default: 0
-  },
-  lastViewed: {
-    type: Date
+  slug: {
+    type: String,
+    unique: true,
+    sparse: true
   },
   createdAt: {
     type: Date,
@@ -84,85 +107,28 @@ const maintenancePageSchema = new mongoose.Schema({
     type: Date,
     default: Date.now
   }
+}, {
+  timestamps: true
 });
 
 // Update the updatedAt timestamp before saving
 maintenancePageSchema.pre('save', function(next) {
   this.updatedAt = Date.now();
-  
-  // Check if the page is scheduled and update status accordingly
-  if (this.scheduledFor) {
-    const now = new Date();
-    if (this.scheduledFor <= now) {
-      this.status = 'published';
-      this.scheduledFor = null;
-    } else {
-      this.status = 'scheduled';
-    }
+  if (!this.slug && this.title) {
+    this.slug = this.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
   }
-  
   next();
 });
 
-// Method to increment view count
+// Method to increment view counts
 maintenancePageSchema.methods.incrementViews = async function(isUnique = false) {
-  this.views += 1;
+  this.analytics.totalViews += 1;
   if (isUnique) {
-    this.analytics.totalViews += 1;
+    this.analytics.uniqueViews += 1;
   }
-  this.lastViewed = Date.now();
-  
-  // Update views by date
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  
-  const viewsByDateIndex = this.analytics.viewsByDate.findIndex(
-    v => v.date.getTime() === today.getTime()
-  );
-
-  if (viewsByDateIndex === -1) {
-    this.analytics.viewsByDate.push({ date: today, count: 1 });
-  } else {
-    this.analytics.viewsByDate[viewsByDateIndex].count += 1;
-  }
-
-  // Update last updated timestamp
-  this.analytics.lastUpdated = new Date();
-  
   await this.save();
 };
 
-// Method to increment unique visitors
-maintenancePageSchema.methods.incrementUniqueVisitors = async function() {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-
-  // Update unique visitors
-  this.analytics.uniqueVisitors += 1;
-
-  // Update visitors by date
-  const visitorsByDateIndex = this.analytics.visitorsByDate.findIndex(
-    v => v.date.getTime() === today.getTime()
-  );
-
-  if (visitorsByDateIndex === -1) {
-    this.analytics.visitorsByDate.push({ date: today, count: 1 });
-  } else {
-    this.analytics.visitorsByDate[visitorsByDateIndex].count += 1;
-  }
-
-  // Update last updated timestamp
-  this.analytics.lastUpdated = new Date();
-
-  await this.save();
-};
-
-// Static method to find by slug
-maintenancePageSchema.statics.findBySlug = function(slug) {
-  return this.findOne({ slug });
-};
-
-// Check if model exists before creating
-const MaintenancePage = mongoose.models.MaintenancePage || mongoose.model('MaintenancePage', maintenancePageSchema);
+const MaintenancePage = mongoose.model('MaintenancePage', maintenancePageSchema);
 
 module.exports = MaintenancePage; 

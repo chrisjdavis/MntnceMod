@@ -5,9 +5,9 @@ title = 'Home';
 <%- contentFor('body') %>
 
 <!-- Hero Section -->
-<div class="relative py-12 bg-[#0a0a0a] mb-6 rounded-2xl">
+<div class="relative py-0 mb-6 rounded-2xl">
     <div class="max-w-3xl mx-auto relative">
-        <div class="relative z-10 pb-8 sm:pb-16 md:pb-20 lg:pb-28 xl:pb-32">
+        <div class="relative z-10 pb-8">
             <main class="mt-10 mx-auto px-4 sm:mt-12 sm:px-6 lg:mt-16 lg:px-8 xl:mt-20">
                 <div class="text-center">
                     <h1 class="text-4xl tracking-tight font-semibold text-white sm:text-5xl md:text-6xl drop-shadow-[0_2px_4px_rgba(0,0,0,0.1)] !leading-[4.5rem]">
@@ -19,14 +19,14 @@ title = 'Home';
                     </p>
                     <div class="mt-5 sm:mt-8 flex flex-col sm:flex-row justify-center space-y-3 sm:space-y-0 sm:space-x-3">
                         <div class="rounded-lg shadow">
-                            <a href="/auth/register" 
-                                class="w-full shadow-[0px_4px_10px_rgba(0,0,0,0.35)] flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-lg text-black bg-white hover:bg-gray-100 transition-colors duration-200 md:py-4 md:text-lg md:px-10">
-                                Get started
+                            <a href="<%= user ? '/dashboard' : '/auth/register' %>" 
+                                class="w-full flex items-center border border-transparent justify-center px-8 py-3 text-base font-medium rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-colors md:py-4 md:text-lg md:px-10">
+                                <%= user ? 'Go to Dashboard' : 'Get started' %>
                             </a>
                         </div>
                         <div>
                             <a href="/pricing" 
-                                class="w-full shadow-[0px_4px_10px_rgba(0,0,0,0.35)] flex items-center justify-center px-8 py-3 border border-gray-300 dark:border-[#27272a] text-base font-medium rounded-lg text-gray-700 dark:text-gray-300 bg-white dark:bg-[#111111] hover:bg-gray-50 dark:hover:bg-[#1a1a1a] transition-colors duration-200 md:py-4 md:text-lg md:px-10">
+                                class="w-full border border-input flex items-center justify-center px-8 py-3 text-base font-medium rounded-md bg-background hover:bg-accent hover:text-accent-foreground transition-colors md:py-4 md:text-lg md:px-10">
                                 View pricing
                             </a>
                         </div>
@@ -38,7 +38,7 @@ title = 'Home';
 </div>
 
 <!-- Features Overview -->
-<div class="relative py-12 bg-[#0a0a0a] mb-6 rounded-2xl">
+<div class="relative py-12 pt-1">
     <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 relative">
         <div class="text-center">
             <h2 class="text-3xl font-semibold text-white sm:text-4xl drop-shadow-[0_2px_4px_rgba(0,0,0,0.1)]">
@@ -52,7 +52,7 @@ title = 'Home';
 </div>
 
 <!-- Visual Page Builder Section -->
-<div class="relative py-12 bg-[#0a0a0a] mb-6 rounded-2xl">
+<div class="relative py-12 border mb-6 rounded-2xl">
     <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 relative">
         <div class="flex items-center">
             <div class="flex-shrink-0">
@@ -91,7 +91,7 @@ title = 'Home';
 </div>
 
 <!-- Real-time Updates Section -->
-<div class="relative py-12 bg-[#0a0a0a] mb-6 rounded-2xl">
+<div class="relative py-12 border mb-6 rounded-2xl">
     <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 relative">
         <div class="flex items-center">
             <div class="flex-shrink-0">
@@ -130,7 +130,7 @@ title = 'Home';
 </div>
 
 <!-- Incident Management Section -->
-<div class="relative py-12 bg-[#0a0a0a] mb-6 rounded-2xl">
+<div class="relative py-12 border mb-6 rounded-2xl">
     <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 relative">
         <div class="flex items-center">
             <div class="flex-shrink-0">
@@ -169,7 +169,7 @@ title = 'Home';
 </div>
 
 <!-- Scheduled Maintenance Section -->
-<div class="relative py-12 bg-[#0a0a0a] mb-6 rounded-2xl">
+<div class="relative py-12 border mb-6 rounded-2xl">
     <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 relative">
         <div class="flex items-center">
             <div class="flex-shrink-0">
@@ -208,7 +208,7 @@ title = 'Home';
 </div>
 
 <!-- Analytics & Reporting Section -->
-<div class="relative py-12 bg-[#0a0a0a] mb-6 rounded-2xl">
+<div class="relative py-12 border mb-6 rounded-2xl">
     <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 relative">
         <div class="flex items-center">
             <div class="flex-shrink-0">
@@ -247,7 +247,7 @@ title = 'Home';
 </div>
 
 <!-- Smart Notifications Section -->
-<div class="relative py-12 bg-[#0a0a0a] mb-6 rounded-2xl">
+<div class="relative py-12 border mb-6 rounded-2xl">
     <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 relative">
         <div class="flex items-center">
             <div class="flex-shrink-0">
@@ -286,7 +286,7 @@ title = 'Home';
 </div>
 
 <!-- CTA Section -->
-<div class="relative bg-[#0a0a0a] mb-6 rounded-2xl">
+<div class="relative border mb-6 rounded-2xl">
     <div class="max-w-3xl mx-auto py-12 px-4 sm:px-6 lg:py-16 lg:px-8 relative">
         <div class="text-center">
             <h2 class="text-3xl font-semibold tracking-tight text-white sm:text-4xl drop-shadow-[0_2px_4px_rgba(0,0,0,0.1)]">
@@ -295,9 +295,9 @@ title = 'Home';
             </h2>
             <div class="mt-8">
                 <div class="inline-flex rounded-lg shadow">
-                    <a href="/auth/register" 
-                        class="inline-flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-lg text-black bg-white hover:bg-gray-100 transition-colors duration-200">
-                        Get started
+                    <a href="<%= user ? '/dashboard' : '/auth/register' %>" 
+                        class="inline-flex items-center justify-center px-5 py-3 text-base font-medium rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-colors">
+                        <%= user ? 'Go to Dashboard' : 'Get started' %>
                     </a>
                 </div>
             </div>
