@@ -40,8 +40,8 @@ title = 'Pricing';
                                     const isDowngrade = plan.price < currentPlan.price;
                                 %>
                                 <form action="/settings/subscription/confirm" method="POST" class="mt-4">
-                                    <input type="hidden" name="plan" value="<%= plan.code %>">
-                                    <input type="hidden" name="action" value="<%= isDowngrade ? 'downgrade' : 'upgrade' %>">
+                                    <input type="hidden" name="_csrf" value="<%= locals.csrfToken %>">
+                                    <input type="hidden" name="planCode" value="<%= plan.code %>">
                                     <button type="submit"
                                         class="w-full <%= plan.code === 'pro' ? 'bg-neon-blue text-black hover:bg-blue-400' : 'bg-dark-700 text-white hover:bg-dark-600' %> border border-transparent rounded-md py-2 text-sm font-semibold text-center">
                                         <%= plan.code === 'enterprise' ? 'Contact sales' : (isDowngrade ? 'Downgrade' : 'Upgrade') %>

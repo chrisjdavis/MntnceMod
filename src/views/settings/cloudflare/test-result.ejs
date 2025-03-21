@@ -1,0 +1,85 @@
+<%
+title = 'Cloudflare Test Results';
+%>
+<%- contentFor('body') %>
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <div class="md:flex md:items-center md:justify-between">
+    <div class="px-4 py-5 sm:px-0">
+      <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Cloudflare Test Results</h1>
+      <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Results of your Cloudflare connection test</p>
+    </div>
+  </div>
+
+  <%- include('../../partials/messages') %>
+  <%- include('../../partials/tabs') %>
+
+  <div class="mt-8">
+    <div class="border shadow rounded-lg p-6">
+      <% if (results.error) { %>
+        <div class="mb-6">
+          <div class="flex items-center">
+            <div class="flex-shrink-0">
+              <svg class="h-5 w-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+              </svg>
+            </div>
+            <div class="ml-3">
+              <h3 class="text-lg font-medium text-red-800 dark:text-red-200">Test Failed</h3>
+              <div class="mt-2 text-sm text-red-700 dark:text-red-300">
+                <p><%= results.error %></p>
+                <% if (results.details) { %>
+                  <pre class="mt-2 p-4 bg-red-50 dark:bg-red-900/50 rounded-md overflow-x-auto"><%= JSON.stringify(results.details, null, 2) %></pre>
+                <% } %>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% } else { %>
+        <div class="space-y-6">
+          <% const tests = [
+            { key: 'tokenVerification', label: 'API Token Verification' },
+            { key: 'accountAccess', label: 'Account Access' },
+            { key: 'zoneAccess', label: 'Zone Access' },
+            { key: 'workerAccess', label: 'Worker Access' },
+            { key: 'kvAccess', label: 'KV Namespace Access' }
+          ]; %>
+
+          <% tests.forEach(test => { %>
+            <div class="pb-4 last:border-0">
+              <div class="flex items-center justify-between">
+                <div>
+                  <h3 class="text-lg font-medium text-gray-900 dark:text-white"><%= test.label %></h3>
+                  <p class="mt-1 text-sm text-gray-500 dark:text-gray-400"><%= results[test.key].message %></p>
+                </div>
+                <div class="flex-shrink-0">
+                  <% if (results[test.key].success) { %>
+                    <svg class="h-5 w-5 text-green-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                      <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                    </svg>
+                  <% } else { %>
+                    <svg class="h-5 w-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                      <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                    </svg>
+                  <% } %>
+                </div>
+              </div>
+              <% if (results[test.key].details) { %>
+                <pre class="mt-2 p-4 border p-4 rounded-md overflow-x-auto text-sm"><%= JSON.stringify(results[test.key].details, null, 2) %></pre>
+              <% } %>
+            </div>
+          <% }); %>
+        </div>
+      <% } %>
+
+      <div class="mt-6 flex justify-end space-x-3">
+        <a href="/settings/cloudflare" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-gray-600 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
+          Back to Configuration
+        </a>
+        <a href="/settings/cloudflare/test" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+          Run Test Again
+        </a>
+      </div>
+    </div>
+  </div>
+</div> 

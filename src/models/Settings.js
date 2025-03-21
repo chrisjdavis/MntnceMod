@@ -50,6 +50,21 @@ const settingsSchema = new mongoose.Schema({
     min: 0,
     max: 30000 // Max 30 seconds
   },
+  // Incident Management Settings
+  enableIncidentManagement: {
+    type: Boolean,
+    default: true
+  },
+  incidentManagementPlan: {
+    type: String,
+    enum: ['free', 'basic', 'pro', 'enterprise'],
+    default: 'pro'
+  },
+  incidentEmailNotifications: [{
+    type: String,
+    enum: ['new', 'updates', 'resolved']
+  }],
+  incidentSlackWebhook: String,
   createdAt: {
     type: Date,
     default: Date.now

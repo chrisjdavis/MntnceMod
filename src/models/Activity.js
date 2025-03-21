@@ -8,7 +8,7 @@ const activitySchema = new mongoose.Schema({
   },
   type: {
     type: String,
-    enum: ['page_create', 'page_update', 'page_delete', 'user_create', 'user_update', 'user_delete', 'login', 'logout', 'subscription_change'],
+    enum: ['page_create', 'page_update', 'page_delete', 'page_toggle', 'page_deploy', 'page_redeploy', 'user_create', 'user_update', 'user_delete', 'login', 'logout', 'subscription_change'],
     required: true
   },
   description: {

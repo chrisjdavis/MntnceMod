@@ -135,6 +135,7 @@ locals.currentPath = '/pages';
                     </a>
                     <% if (page.status !== 'archived') { %>
                       <form action="/pages/<%= page._id %>/archive" method="POST" class="inline">
+                        <input type="hidden" name="_csrf" value="<%= locals.csrfToken %>">
                         <button type="submit" class="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-9 px-3">
                           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2">
                             <rect width="20" height="5" x="2" y="3" rx="1"/>
@@ -146,6 +147,7 @@ locals.currentPath = '/pages';
                       </form>
                     <% } %>
                     <form action="/pages/<%= page._id %>?_method=DELETE" method="POST" class="inline">
+                      <input type="hidden" name="_csrf" value="<%= locals.csrfToken %>">
                       <button type="submit" class="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-9 px-3 text-destructive" onclick="return confirm('Are you sure you want to delete this page?')">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2">
                           <path d="M3 6h18"/>
@@ -160,6 +162,7 @@ locals.currentPath = '/pages';
                       <div class="flex items-center justify-end space-x-2">
                         <% if (!page.deployed) { %>
                           <form action="/pages/<%= page._id %>/deploy" method="POST" class="inline">
+                            <input type="hidden" name="_csrf" value="<%= locals.csrfToken %>">
                             <button type="submit" class="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-9 px-3">
                               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2">
                                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
@@ -170,7 +173,17 @@ locals.currentPath = '/pages';
                         <% } else if (page.status === 'scheduled') { %>
                           <span class="text-yellow-400">Scheduled</span>
                         <% } else { %>
+                          <form action="/pages/<%= page._id %>/redeploy" method="POST" class="inline">
+                            <input type="hidden" name="_csrf" value="<%= locals.csrfToken %>">
+                            <button type="submit" class="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-9 px-3">
+                              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2">
+                                <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/>
+                              </svg>
+                              Redeploy
+                            </button>
+                          </form>
                           <form action="/pages/<%= page._id %>/toggle" method="POST" class="inline">
+                            <input type="hidden" name="_csrf" value="<%= locals.csrfToken %>">
                             <button type="submit" class="<%= page.status === 'published' ? 'text-red-400 hover:text-red-300' : 'text-green-400 hover:text-green-300' %>">
                               <%= page.status === 'published' ? 'Deactivate' : 'Activate' %>
                             </button>

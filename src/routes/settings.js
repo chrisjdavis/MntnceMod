@@ -28,7 +28,8 @@ router.post('/notifications', settingsController.updateNotifications);
 
 // Subscription settings
 router.get('/subscription', settingsController.getSubscription);
-router.post('/subscription', settingsController.updateSubscription);
+router.post('/subscription/confirm', settingsController.confirmSubscriptionChange);
+router.post('/subscription/change-plan', settingsController.updateSubscription);
 
 // Security settings
 router.get('/security', settingsController.getSecurity);
@@ -39,10 +40,13 @@ router.get('/security/2fa/setup', settingsController.setupTwoFactor);
 router.post('/security/2fa/verify', settingsController.verifyTwoFactor);
 router.post('/security/2fa/disable', settingsController.disableTwoFactor);
 
-// Cloudflare settings
+// Cloudflare routes
 router.get('/cloudflare', cloudflareController.getConfig);
+router.get('/cloudflare/edit', cloudflareController.editConfig);
 router.post('/cloudflare/save', cloudflareController.saveConfig);
 router.post('/cloudflare/delete', cloudflareController.deleteConfig);
-router.post('/cloudflare/test', cloudflareController.testConfig);
+router.get('/cloudflare/test', cloudflareController.testConnectionPage);
+router.post('/cloudflare/test', cloudflareController.testConnection);
+router.get('/cloudflare/test-result', cloudflareController.testResult);
 
 module.exports = router; 

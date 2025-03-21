@@ -1,0 +1,44 @@
+<%
+title = 'Test Cloudflare Connection';
+%>
+<%- contentFor('body') %>
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <div class="md:flex md:items-center md:justify-between">
+    <div class="px-4 py-5 sm:px-0">
+      <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Test Cloudflare Connection</h1>
+      <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Verify your Cloudflare configuration and permissions</p>
+    </div>
+  </div>
+
+  <%- include('../../partials/messages') %>
+  <%- include('../../partials/tabs') %>
+
+  <div class="mt-8">
+    <div class="border shadow rounded-lg p-6">
+      <div class="mb-6">
+        <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Connection Test</h2>
+        <p class="text-gray-600 dark:text-gray-400 mb-4">
+          This test will verify your Cloudflare configuration by checking:
+        </p>
+        <ul class="list-disc list-inside text-gray-600 dark:text-gray-400 space-y-2 mb-6">
+          <li>API Token validity</li>
+          <li>Account access</li>
+          <li>Zone access</li>
+          <li>Worker access</li>
+          <li>KV namespace access</li>
+        </ul>
+      </div>
+
+      <form action="/settings/cloudflare/test" method="POST" class="space-y-6">
+        <input type="hidden" name="_csrf" value="<%= locals.csrfToken %>">
+        
+        <div class="flex justify-end">
+          <button type="submit" class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-4">
+            Run Connection Test
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div> 

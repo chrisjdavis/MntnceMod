@@ -16,6 +16,6 @@ router.post('/save', cloudflareController.saveConfig);
 router.post('/delete', cloudflareController.deleteConfig);
 
 // Test Cloudflare configuration
-router.post('/test', cloudflareController.testConfig);
+router.post('/test', cloudflareController.testConnection);
 
 module.exports = router; 

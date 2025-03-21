@@ -1,89 +1,73 @@
 <%
-title = 'Set Up Cloudflare';
+title = 'Edit Cloudflare Configuration';
 %>
 <%- contentFor('body') %>
 
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
   <div class="md:flex md:items-center md:justify-between">
     <div class="px-4 py-5 sm:px-0">
-      <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Set Up Cloudflare</h1>
-      <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Configure your Cloudflare account for maintenance pages</p>
+      <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Edit Cloudflare Configuration</h1>
+      <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Update your Cloudflare settings for maintenance pages</p>
     </div>
   </div>
 
+  <%- include('../../partials/messages') %>
+  <%- include('../../partials/tabs') %>
+
   <div class="mt-8">
-    <div class="border shadow rounded-lg p-6">
-      <% if (messages.error_msg) { %>
-        <div class="mb-4 p-4 bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-100 rounded-md">
-          <%= messages.error_msg %>
-        </div>
-      <% } %>
-
-      <div class="mb-6">
-        <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Cloudflare Configuration</h2>
-        <p class="text-gray-600 dark:text-gray-400 mb-4">To use maintenance pages, you need to connect your Cloudflare account. Follow these steps:</p>
-        <ol class="list-decimal list-inside text-gray-600 dark:text-gray-400 space-y-2 mb-6">
-          <li>Log in to your Cloudflare account</li>
-          <li>Go to My Profile > API Tokens</li>
-          <li>Create a new token with the following permissions:
-            <ul class="list-disc list-inside ml-6 mt-2">
-              <li>Zone - Zone Settings - Read</li>
-              <li>Zone - Zone - Read</li>
-              <li>Zone - DNS - Edit</li>
-              <li>Zone - Workers Scripts - Edit</li>
-              <li>Zone - Workers Routes - Edit</li>
-              <li>Account - Workers KV Storage - Edit</li>
-            </ul>
-          </li>
-          <li>Copy your Account ID from the Cloudflare dashboard</li>
-          <li>Copy your Zone ID from the domain settings</li>
-          <li>Create a KV namespace and copy its ID</li>
-        </ol>
-      </div>
-
+    <div class="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
       <form action="/settings/cloudflare/save" method="POST" class="space-y-6">
         <input type="hidden" name="_csrf" value="<%= locals.csrfToken %>">
+        
         <div>
           <label for="apiToken" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">API Token</label>
-          <input type="password" id="apiToken" name="apiToken" required
+          <input type="password" id="apiToken" name="apiToken"
             class="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white">
+          <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Leave blank to keep current token</p>
         </div>
 
         <div>
           <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Email</label>
           <input type="email" id="email" name="email" required
+            value="<%= config.email %>"
             class="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white">
         </div>
 
         <div>
           <label for="accountId" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Account ID</label>
           <input type="text" id="accountId" name="accountId" required
+            value="<%= config.accountId %>"
             class="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white">
         </div>
 
         <div>
           <label for="zoneId" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Zone ID</label>
           <input type="text" id="zoneId" name="zoneId" required
+            value="<%= config.zoneId %>"
             class="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white">
         </div>
 
         <div>
           <label for="kvNamespaceId" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">KV Namespace ID</label>
           <input type="text" id="kvNamespaceId" name="kvNamespaceId" required
+            value="<%= config.kvNamespaceId %>"
             class="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white">
         </div>
 
         <div>
           <label for="workerName" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Worker Name</label>
           <input type="text" id="workerName" name="workerName"
-            class="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white"
-            value="maintenance-worker">
+            value="<%= config.workerName %>"
+            class="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white">
           <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Optional. Default: maintenance-worker</p>
         </div>
 
-        <div class="flex justify-end">
-          <button type="submit" class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-4">
-            Save Configuration
+        <div class="flex justify-end space-x-3">
+          <a href="/settings/cloudflare" class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 text-sm font-medium rounded-md shadow-sm text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+            Cancel
+          </a>
+          <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+            Save Changes
           </button>
         </div>
       </form>

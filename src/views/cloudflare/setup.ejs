@@ -36,6 +36,7 @@ title = 'Set Up Cloudflare';
       </div>
 
       <form action="/cloudflare/save" method="POST" class="space-y-6">
+        <input type="hidden" name="_csrf" value="<%= locals.csrfToken %>">
         <div>
           <label for="apiToken" class="block text-sm font-medium text-gray-400 mb-2">API Token</label>
           <input type="password" id="apiToken" name="apiToken" required

@@ -158,6 +158,79 @@ title = 'System Settings';
               </div>
             </div>
 
+            <!-- Incident Management Settings -->
+            <div class="mt-8 space-y-6">
+              <div>
+                <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-white">Incident Management Settings</h3>
+                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Configure incident management features</p>
+              </div>
+
+              <div class="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
+                <div class="sm:col-span-3">
+                  <label for="enableIncidentManagement" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Enable Incident Management</label>
+                  <div class="mt-1">
+                    <input type="checkbox" name="enableIncidentManagement" id="enableIncidentManagement" 
+                      <%= settings.enableIncidentManagement ? 'checked' : '' %> 
+                      class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                  </div>
+                </div>
+
+                <div class="sm:col-span-3">
+                  <label for="incidentManagementPlan" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Required Plan</label>
+                  <div class="mt-1">
+                    <select name="incidentManagementPlan" id="incidentManagementPlan"
+                      class="shadow-sm focus:ring-neon-blue focus:border-neon-blue block w-full sm:text-sm border-gray-300 dark:border-gray-600 rounded-md dark:bg-gray-700 dark:text-white p-4">
+                      <option value="free" <%= settings.incidentManagementPlan === 'free' ? 'selected' : '' %>>Free</option>
+                      <option value="basic" <%= settings.incidentManagementPlan === 'basic' ? 'selected' : '' %>>Basic</option>
+                      <option value="pro" <%= settings.incidentManagementPlan === 'pro' ? 'selected' : '' %>>Pro</option>
+                      <option value="enterprise" <%= settings.incidentManagementPlan === 'enterprise' ? 'selected' : '' %>>Enterprise</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="sm:col-span-6">
+                  <label for="incidentEmailNotifications" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Email Notifications</label>
+                  <div class="mt-1 space-y-2">
+                    <div class="flex items-center">
+                      <input type="checkbox" name="incidentEmailNotifications[]" id="incidentEmailNotificationsNew" value="new"
+                        <%= settings.incidentEmailNotifications?.includes('new') ? 'checked' : '' %>
+                        class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                      <label for="incidentEmailNotificationsNew" class="ml-2 block text-sm text-gray-700 dark:text-gray-300">
+                        New incidents
+                      </label>
+                    </div>
+                    <div class="flex items-center">
+                      <input type="checkbox" name="incidentEmailNotifications[]" id="incidentEmailNotificationsUpdates" value="updates"
+                        <%= settings.incidentEmailNotifications?.includes('updates') ? 'checked' : '' %>
+                        class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                      <label for="incidentEmailNotificationsUpdates" class="ml-2 block text-sm text-gray-700 dark:text-gray-300">
+                        Incident updates
+                      </label>
+                    </div>
+                    <div class="flex items-center">
+                      <input type="checkbox" name="incidentEmailNotifications[]" id="incidentEmailNotificationsResolved" value="resolved"
+                        <%= settings.incidentEmailNotifications?.includes('resolved') ? 'checked' : '' %>
+                        class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                      <label for="incidentEmailNotificationsResolved" class="ml-2 block text-sm text-gray-700 dark:text-gray-300">
+                        Incident resolution
+                      </label>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="sm:col-span-6">
+                  <label for="incidentSlackWebhook" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Slack Webhook URL</label>
+                  <div class="mt-1">
+                    <input type="text" name="incidentSlackWebhook" id="incidentSlackWebhook" 
+                      value="<%= settings.incidentSlackWebhook || '' %>"
+                      class="shadow-sm focus:ring-neon-blue focus:border-neon-blue block w-full sm:text-sm border-gray-300 dark:border-gray-600 rounded-md dark:bg-gray-700 dark:text-white p-4"
+                      placeholder="https://hooks.slack.com/services/...">
+                  </div>
+                  <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Optional. Send incident notifications to Slack</p>
+                </div>
+              </div>
+            </div>
+
             <!-- Submit Button -->
             <div class="mt-8">
               <button type="submit" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-neon-blue hover:bg-neon-blue/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neon-blue">

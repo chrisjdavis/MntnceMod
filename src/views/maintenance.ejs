@@ -1,29 +1,13 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Maintenance - <%= locals.settings?.siteName || 'StatusSaaS' %></title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+    <title><%= settings.siteName || 'StatusSaaS' %></title>
+    <link href="/css/output.css" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@100..900&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --maintenance-bg: <%- settings.maintenanceBackgroundColor || '#0f172a' %>;
-            --maintenance-text: <%- settings.maintenanceTextColor || '#ffffff' %>;
-        }
-        body {
-            background-color: var(--maintenance-bg);
-            color: var(--maintenance-text);
-            font-family: 'Geist Mono', monospace;
-        }
-        h1, h2, h3, h4, h5, h6 {
-            font-family: 'Inter var', sans-serif;
-            color: var(--maintenance-text);
-        }
-    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body class="min-h-screen flex flex-col items-center justify-center p-4">
     <div class="max-w-2xl w-full text-center">
@@ -44,6 +28,18 @@
                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
             </svg>
         </div>
+
+        <% if (locals.user && locals.user.subscription.plan === 'pro' && locals.page) { %>
+            <div class="mt-8">
+                <a href="/pages/<%= locals.page._id %>/history" 
+                   class="inline-flex items-center text-blue-400 hover:text-blue-300">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    View Incident History
+                </a>
+            </div>
+        <% } %>
     </div>
 
     <footer class="fixed bottom-0 w-full p-4 text-center opacity-60 text-sm">

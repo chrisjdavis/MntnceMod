@@ -20,6 +20,7 @@ title = 'Cloudflare Configuration';
             Test Connection
           </button>
           <form action="/cloudflare/delete" method="POST" class="inline">
+            <input type="hidden" name="_csrf" value="<%= locals.csrfToken %>">
             <button type="submit" class="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-9 px-3 text-red-400 hover:text-red-300"
               onclick="return confirm('Are you sure you want to delete your Cloudflare configuration? This will affect all maintenance pages.')">
               Delete Configuration

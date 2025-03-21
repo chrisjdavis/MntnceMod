@@ -5,6 +5,7 @@ const Page = require('../models/MaintenancePage');
 const Activity = require('../models/Activity');
 const User = require('../models/User');
 const cloudflare = require('../services/cloudflare');
+const CloudflareService = require('../services/CloudflareService');
 
 // List all pages
 router.get('/', isAuthenticated, async (req, res) => {
@@ -338,19 +339,6 @@ router.get('/:id/view', async (req, res) => {
       return res.redirect('/');
     }
 
-    // Check if page has reached view limit
-    const user = await User.findById(page.user);
-    if (!user) {
-      return res.redirect('/');
-    }
-
-    const subscriptionLimits = await user.subscriptionLimits;
-    const viewsPerPage = subscriptionLimits.viewsPerPage || 1000;
-
-    if (page.analytics.totalViews >= viewsPerPage) {
-      return res.redirect('/');
-    }
-
     // Check if this is a unique visitor using a cookie
     const visitorCookie = `visitor_${page._id}`;
     const isUnique = !req.cookies[visitorCookie];
@@ -434,8 +422,8 @@ router.post('/:id/deploy', isAuthenticated, async (req, res) => {
     // Log activity
     await Activity.create({
       user: req.user._id,
-      action: 'deploy_page',
-      details: `Deployed page: ${page.title}`
+      type: 'page_deploy',
+      description: `Deployed page: ${page.title}`
     });
 
     res.redirect(`/pages/${page._id}/deploy-success`);
@@ -471,8 +459,8 @@ router.post('/:id/toggle', isAuthenticated, async (req, res) => {
     // Log activity
     await Activity.create({
       user: req.user._id,
-      action: 'toggle_page',
-      details: `${newStatus === 'published' ? 'Activated' : 'Deactivated'} page: ${page.title}`
+      type: 'page_toggle',
+      description: `${newStatus === 'published' ? 'Activated' : 'Deactivated'} page: ${page.title}`
     });
 
     req.flash('success', `Page ${newStatus === 'published' ? 'activated' : 'deactivated'} successfully`);
@@ -497,6 +485,39 @@ router.get('/:id/deploy-success', isAuthenticated, async (req, res) => {
   } catch (error) {
     console.error('Deploy Success Page Error:', error);
     req.flash('error_msg', 'Error loading deployment success page');
+    res.redirect('/pages');
+  }
+});
+
+// Redeploy page to Cloudflare
+router.post('/:id/redeploy', isAuthenticated, async (req, res) => {
+  try {
+    const page = await Page.findOne({ _id: req.params.id, user: req.user._id });
+    if (!page) {
+      req.flash('error', 'Page not found');
+      return res.redirect('/pages');
+    }
+
+    if (!page.deployed) {
+      req.flash('error', 'Page must be deployed before redeploying');
+      return res.redirect('/pages');
+    }
+
+    const cloudflareService = new CloudflareService(req.user);
+    await cloudflareService.deployPage(page);
+
+    // Log activity
+    await Activity.create({
+      user: req.user._id,
+      type: 'page_redeploy',
+      description: `Redeployed page: ${page.title}`
+    });
+
+    req.flash('success', 'Page redeployed successfully');
+    res.redirect('/pages');
+  } catch (error) {
+    console.error('Redeploy Error:', error);
+    req.flash('error', 'Failed to redeploy page');
     res.redirect('/pages');
   }
 });

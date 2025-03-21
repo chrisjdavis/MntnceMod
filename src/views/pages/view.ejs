@@ -32,6 +32,7 @@
 
       <div class="mt-8 pt-6 border-t border-gray-200">
         <form action="/pages/<%= page._id %>?_method=DELETE" method="POST" class="flex justify-end">
+          <input type="hidden" name="_csrf" value="<%= locals.csrfToken %>">
           <a href="/pages/<%= page._id %>/edit" class="text-gray-600 mr-8 hover:text-gray-800">Edit</a>
           <a href="/pages/<%= page._id %>/preview" class="text-gray-600 mr-8 hover:text-gray-800">
             Preview

@@ -1,0 +1,349 @@
+<%
+title = 'Incident Details';
+%>
+<%- contentFor('body') %>
+
+<div class="container mx-auto px-4 py-8">
+  <div class="max-w-4xl mx-auto">
+    <div class="flex justify-between items-start mb-8">
+      <div>
+        <h1 class="text-3xl font-bold text-white mb-2"><%= incident.title %></h1>
+        <div class="flex items-center space-x-4 text-sm text-gray-400">
+          <span class="<%= getStatusColor(incident.status) %>"><%= incident.status %></span>
+          <span>Impact: <%= incident.impact %></span>
+          <span>Started: <%= new Date(incident.startTime).toLocaleString() %></span>
+          <% if (incident.resolvedAt) { %>
+            <span>Resolved: <%= new Date(incident.resolvedAt).toLocaleString() %></span>
+          <% } %>
+        </div>
+      </div>
+      <div class="flex space-x-2">
+        <button onclick="openUpdateModal()" class="text-blue-400 hover:text-blue-300">
+          Add Update
+        </button>
+        <% if (incident.status === 'resolved' && !incident.postMortem) { %>
+          <button onclick="openPostMortemModal()" class="text-green-400 hover:text-green-300">
+            Add Post-Mortem
+          </button>
+        <% } %>
+      </div>
+    </div>
+
+    <div class="bg-dark-800 rounded-lg shadow-md p-6 mb-8">
+      <h2 class="text-xl font-semibold text-white mb-4">Description</h2>
+      <p class="text-gray-300"><%= incident.description %></p>
+      
+      <div class="mt-6">
+        <h3 class="text-sm font-medium text-gray-400 mb-2">Affected Components</h3>
+        <div class="flex flex-wrap gap-2">
+          <% incident.affectedComponents.forEach(component => { %>
+            <span class="bg-dark-700 text-gray-300 px-3 py-1 rounded-full text-sm">
+              <%= component %>
+            </span>
+          <% }) %>
+        </div>
+      </div>
+    </div>
+
+    <!-- Timeline -->
+    <div class="bg-dark-800 rounded-lg shadow-md p-6">
+      <h2 class="text-xl font-semibold text-white mb-6">Timeline</h2>
+      
+      <div class="space-y-6">
+        <% incident.updates.forEach((update, index) => { %>
+          <div class="flex items-start space-x-4">
+            <div class="flex-shrink-0">
+              <div class="w-2 h-2 rounded-full <%= getStatusColor(update.status) %>"></div>
+              <% if (index < incident.updates.length - 1) { %>
+                <div class="w-0.5 h-full bg-dark-700 mx-auto"></div>
+              <% } %>
+            </div>
+            <div class="flex-1">
+              <div class="bg-dark-700 rounded-lg p-4">
+                <div class="flex justify-between items-start mb-2">
+                  <span class="<%= getStatusColor(update.status) %> font-medium"><%= update.status %></span>
+                  <span class="text-sm text-gray-400">
+                    <%= new Date(update.timestamp).toLocaleString() %>
+                  </span>
+                </div>
+                <p class="text-gray-300 mb-2"><%= update.message %></p>
+                <% if (update.affectedComponents && update.affectedComponents.length > 0) { %>
+                  <div class="flex flex-wrap gap-2 mt-2">
+                    <% update.affectedComponents.forEach(component => { %>
+                      <span class="bg-dark-600 text-gray-300 px-2 py-1 rounded-full text-sm">
+                        <%= component %>
+                      </span>
+                    <% }) %>
+                  </div>
+                <% } %>
+                <div class="text-sm text-gray-400 mt-2">
+                  Updated by <%= update.createdBy.name %>
+                </div>
+              </div>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+    </div>
+
+    <!-- Post-Mortem -->
+    <% if (incident.postMortem) { %>
+      <div class="bg-dark-800 rounded-lg shadow-md p-6 mt-8">
+        <h2 class="text-xl font-semibold text-white mb-6">Post-Mortem</h2>
+        
+        <div class="space-y-6">
+          <div>
+            <h3 class="text-sm font-medium text-gray-400 mb-2">Summary</h3>
+            <p class="text-gray-300"><%= incident.postMortem.summary %></p>
+          </div>
+          
+          <div>
+            <h3 class="text-sm font-medium text-gray-400 mb-2">Root Cause</h3>
+            <p class="text-gray-300"><%= incident.postMortem.rootCause %></p>
+          </div>
+          
+          <div>
+            <h3 class="text-sm font-medium text-gray-400 mb-2">Resolution</h3>
+            <p class="text-gray-300"><%= incident.postMortem.resolution %></p>
+          </div>
+          
+          <div>
+            <h3 class="text-sm font-medium text-gray-400 mb-2">Prevention Measures</h3>
+            <p class="text-gray-300"><%= incident.postMortem.prevention %></p>
+          </div>
+        </div>
+      </div>
+    <% } %>
+  </div>
+</div>
+
+<!-- Update Modal -->
+<div id="updateModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center">
+  <div class="bg-dark-800 rounded-lg p-6 max-w-2xl w-full mx-4">
+    <div class="flex justify-between items-center mb-6">
+      <h2 class="text-2xl font-semibold text-white">Add Update</h2>
+      <button onclick="closeUpdateModal()" class="text-gray-400 hover:text-white">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+
+    <form id="updateForm" class="space-y-6" data-incident-id="<%= incident._id %>">
+      <input type="hidden" name="_csrf" value="<%= locals.csrfToken %>">
+      <div>
+        <label for="status" class="block text-sm font-medium text-gray-400 mb-2">Status</label>
+        <select id="status" name="status" required
+          class="w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white">
+          <option value="investigating">Investigating</option>
+          <option value="identified">Identified</option>
+          <option value="monitoring">Monitoring</option>
+          <option value="resolved">Resolved</option>
+          <option value="post-mortem">Post-Mortem</option>
+        </select>
+      </div>
+
+      <div>
+        <label for="message" class="block text-sm font-medium text-gray-400 mb-2">Message</label>
+        <textarea id="message" name="message" rows="4" required
+          class="w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"></textarea>
+      </div>
+
+      <div>
+        <label for="impact" class="block text-sm font-medium text-gray-400 mb-2">Impact Level</label>
+        <select id="impact" name="impact" required
+          class="w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white">
+          <option value="none">None</option>
+          <option value="minor">Minor</option>
+          <option value="major">Major</option>
+          <option value="critical">Critical</option>
+        </select>
+      </div>
+
+      <div>
+        <label for="affectedComponents" class="block text-sm font-medium text-gray-400 mb-2">Affected Components</label>
+        <div id="componentsContainer" class="space-y-2">
+          <input type="text" name="affectedComponents[]" required
+            class="w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
+            placeholder="Enter a component name">
+        </div>
+        <button type="button" onclick="addComponentInput()" class="mt-2 text-blue-400 hover:text-blue-300 text-sm">
+          + Add Component
+        </button>
+      </div>
+
+      <div class="flex justify-end space-x-4">
+        <button type="button" onclick="closeUpdateModal()"
+          class="px-4 py-2 text-gray-400 hover:text-white">
+          Cancel
+        </button>
+        <button type="submit"
+          class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+          Add Update
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Post-Mortem Modal -->
+<div id="postMortemModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center">
+  <div class="bg-dark-800 rounded-lg p-6 max-w-2xl w-full mx-4">
+    <div class="flex justify-between items-center mb-6">
+      <h2 class="text-2xl font-semibold text-white">Add Post-Mortem</h2>
+      <button onclick="closePostMortemModal()" class="text-gray-400 hover:text-white">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+
+    <form id="postMortemForm" class="space-y-6" data-incident-id="<%= incident._id %>">
+      <input type="hidden" name="_csrf" value="<%= locals.csrfToken %>">
+      <div>
+        <label for="summary" class="block text-sm font-medium text-gray-400 mb-2">Summary</label>
+        <textarea id="summary" name="summary" rows="3" required
+          class="w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"></textarea>
+      </div>
+
+      <div>
+        <label for="rootCause" class="block text-sm font-medium text-gray-400 mb-2">Root Cause</label>
+        <textarea id="rootCause" name="rootCause" rows="3" required
+          class="w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"></textarea>
+      </div>
+
+      <div>
+        <label for="resolution" class="block text-sm font-medium text-gray-400 mb-2">Resolution</label>
+        <textarea id="resolution" name="resolution" rows="3" required
+          class="w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"></textarea>
+      </div>
+
+      <div>
+        <label for="prevention" class="block text-sm font-medium text-gray-400 mb-2">Prevention Measures</label>
+        <textarea id="prevention" name="prevention" rows="3" required
+          class="w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"></textarea>
+      </div>
+
+      <div class="flex justify-end space-x-4">
+        <button type="button" onclick="closePostMortemModal()"
+          class="px-4 py-2 text-gray-400 hover:text-white">
+          Cancel
+        </button>
+        <button type="submit"
+          class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+          Save Post-Mortem
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<%- contentFor('scripts') %>
+<script>
+  // Get CSRF token from meta tag
+  const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+  // Function to handle update submission
+  async function handleUpdate(event) {
+    event.preventDefault();
+    const form = event.target;
+    const formData = new FormData(form);
+
+    try {
+      const response = await fetch(`/api/incidents/${form.dataset.incidentId}/updates`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'CSRF-Token': csrfToken
+        },
+        body: JSON.stringify(Object.fromEntries(formData))
+      });
+
+      if (response.ok) {
+        window.location.reload();
+      } else {
+        const error = await response.json();
+        alert(error.message || 'Failed to add update');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      alert('Failed to add update');
+    }
+  }
+
+  // Function to handle post-mortem submission
+  async function handlePostMortem(event) {
+    event.preventDefault();
+    const form = event.target;
+    const formData = new FormData(form);
+
+    try {
+      const response = await fetch(`/api/incidents/${form.dataset.incidentId}/post-mortem`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'CSRF-Token': csrfToken
+        },
+        body: JSON.stringify(Object.fromEntries(formData))
+      });
+
+      if (response.ok) {
+        window.location.reload();
+      } else {
+        const error = await response.json();
+        alert(error.message || 'Failed to add post-mortem');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      alert('Failed to add post-mortem');
+    }
+  }
+
+  // Add event listeners
+  document.getElementById('updateForm').addEventListener('submit', handleUpdate);
+  document.getElementById('postMortemForm').addEventListener('submit', handlePostMortem);
+
+  // Modal functions
+  function openUpdateModal() {
+    document.getElementById('updateModal').classList.remove('hidden');
+    document.getElementById('updateModal').classList.add('flex');
+  }
+
+  function closeUpdateModal() {
+    document.getElementById('updateModal').classList.remove('flex');
+    document.getElementById('updateModal').classList.add('hidden');
+  }
+
+  function openPostMortemModal() {
+    document.getElementById('postMortemModal').classList.remove('hidden');
+    document.getElementById('postMortemModal').classList.add('flex');
+  }
+
+  function closePostMortemModal() {
+    document.getElementById('postMortemModal').classList.remove('flex');
+    document.getElementById('postMortemModal').classList.add('hidden');
+  }
+
+  // Add component input
+  function addComponentInput() {
+    const container = document.getElementById('componentsContainer');
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.name = 'affectedComponents[]';
+    input.className = 'w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white';
+    input.placeholder = 'Enter a component name';
+    container.appendChild(input);
+  }
+
+  // Helper function for status colors
+  function getStatusColor(status) {
+    const colors = {
+      'investigating': 'text-yellow-400',
+      'identified': 'text-blue-400',
+      'monitoring': 'text-purple-400',
+      'resolved': 'text-green-400',
+      'post-mortem': 'text-gray-400'
+    };
+    return colors[status] || 'text-gray-400';
+  }
+</script> 

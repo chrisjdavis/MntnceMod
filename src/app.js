@@ -30,7 +30,6 @@ app.set("layout extractStyles", true);
 // Middleware
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/css', express.static(path.join(__dirname, 'public/css')));
-app.use(methodOverride('_method'));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
@@ -60,6 +59,9 @@ app.use(passport.session());
 
 // CSRF protection
 app.use(csrf());
+
+// Method override middleware (moved after CSRF)
+app.use(methodOverride('_method'));
 
 // Pass CSRF token to all views
 app.use((req, res, next) => {
@@ -98,6 +100,7 @@ const pagesRoutes = require('./routes/pages');
 const adminRoutes = require('./routes/admin');
 const webhookRoutes = require('./routes/webhook');
 const analyticsRoutes = require('./routes/analytics');
+const incidentRoutes = require('./routes/incidents');
 
 // Routes
 app.use('/', indexRoutes);
@@ -110,6 +113,7 @@ app.use('/pages', pagesRoutes);
 app.use('/admin', adminRoutes);
 app.use('/webhook', webhookRoutes);
 app.use('/analytics', analyticsRoutes);
+app.use('/api', incidentRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {

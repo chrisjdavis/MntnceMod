@@ -12,7 +12,10 @@ title = 'Edit Page';
       </a>
     </div>
 
+    <%- include('../partials/messages') %>
+
     <form action="/pages/<%= page._id %>?_method=PUT" method="POST" class="border rounded-lg shadow-md p-6">
+      <input type="hidden" name="_csrf" value="<%= locals.csrfToken %>">
       <!-- Basic Information -->
       <div class="mb-8">
         <h2 class="text-xl font-semibold text-white mb-4">Basic Information</h2>

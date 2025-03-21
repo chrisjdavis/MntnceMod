@@ -1,0 +1,303 @@
+<%
+title = 'Incident Management';
+%>
+<%- contentFor('body') %>
+
+<div class="container mx-auto px-4 py-8">
+  <div class="max-w-7xl mx-auto">
+    <div class="flex justify-between items-center mb-8">
+      <h1 class="text-3xl font-bold text-white">Incident Management</h1>
+      <button onclick="openNewIncidentModal()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+        New Incident
+      </button>
+    </div>
+
+    <!-- Incidents List -->
+    <div class="grid gap-6">
+      <% incidents.forEach(incident => { %>
+        <div class="bg-dark-800 rounded-lg shadow-md p-6">
+          <div class="flex justify-between items-start mb-4">
+            <div>
+              <h2 class="text-xl font-semibold text-white mb-2"><%= incident.title %></h2>
+              <div class="flex items-center space-x-4 text-sm text-gray-400">
+                <span class="<%= getStatusColor(incident.status) %>"><%= incident.status %></span>
+                <span>Impact: <%= incident.impact %></span>
+                <span>Started: <%= new Date(incident.startTime).toLocaleString() %></span>
+              </div>
+            </div>
+            <div class="flex space-x-2">
+              <a href="/incidents/<%= incident._id %>" class="text-blue-400 hover:text-blue-300">
+                View Details
+              </a>
+              <% if (incident.status === 'resolved' && !incident.postMortem) { %>
+                <button onclick="openPostMortemModal('<%= incident._id %>')" class="text-green-400 hover:text-green-300">
+                  Add Post-Mortem
+                </button>
+              <% } %>
+            </div>
+          </div>
+          
+          <p class="text-gray-300 mb-4"><%= incident.description %></p>
+          
+          <div class="mb-4">
+            <h3 class="text-sm font-medium text-gray-400 mb-2">Affected Components</h3>
+            <div class="flex flex-wrap gap-2">
+              <% incident.affectedComponents.forEach(component => { %>
+                <span class="bg-dark-700 text-gray-300 px-3 py-1 rounded-full text-sm">
+                  <%= component %>
+                </span>
+              <% }) %>
+            </div>
+          </div>
+
+          <!-- Latest Update -->
+          <% if (incident.updates && incident.updates.length > 0) { %>
+            <% const latestUpdate = incident.updates[incident.updates.length - 1] %>
+            <div class="border-t border-dark-700 pt-4">
+              <h3 class="text-sm font-medium text-gray-400 mb-2">Latest Update</h3>
+              <div class="flex items-start space-x-4">
+                <div class="flex-shrink-0">
+                  <div class="w-2 h-2 rounded-full <%= getStatusColor(latestUpdate.status) %>"></div>
+                </div>
+                <div>
+                  <p class="text-gray-300"><%= latestUpdate.message %></p>
+                  <p class="text-sm text-gray-400 mt-1">
+                    <%= new Date(latestUpdate.timestamp).toLocaleString() %> by <%= latestUpdate.createdBy.name %>
+                  </p>
+                </div>
+              </div>
+            </div>
+          <% } %>
+        </div>
+      <% }) %>
+    </div>
+  </div>
+</div>
+
+<!-- New Incident Modal -->
+<div id="newIncidentModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center">
+  <div class="bg-dark-800 rounded-lg p-6 max-w-2xl w-full mx-4">
+    <div class="flex justify-between items-center mb-6">
+      <h2 class="text-2xl font-semibold text-white">New Incident</h2>
+      <button onclick="closeNewIncidentModal()" class="text-gray-400 hover:text-white">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+
+    <form id="newIncidentForm" class="space-y-6">
+      <input type="hidden" name="_csrf" value="<%= locals.csrfToken %>">
+      <div>
+        <label for="title" class="block text-sm font-medium text-gray-400 mb-2">Title</label>
+        <input type="text" id="title" name="title" required
+          class="w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white">
+      </div>
+
+      <div>
+        <label for="description" class="block text-sm font-medium text-gray-400 mb-2">Description</label>
+        <textarea id="description" name="description" rows="4" required
+          class="w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"></textarea>
+      </div>
+
+      <div>
+        <label for="impact" class="block text-sm font-medium text-gray-400 mb-2">Impact Level</label>
+        <select id="impact" name="impact" required
+          class="w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white">
+          <option value="none">None</option>
+          <option value="minor">Minor</option>
+          <option value="major">Major</option>
+          <option value="critical">Critical</option>
+        </select>
+      </div>
+
+      <div>
+        <label for="affectedComponents" class="block text-sm font-medium text-gray-400 mb-2">Affected Components</label>
+        <div id="componentsContainer" class="space-y-2">
+          <input type="text" name="affectedComponents[]" required
+            class="w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
+            placeholder="Enter a component name">
+        </div>
+        <button type="button" onclick="addComponentInput()" class="mt-2 text-blue-400 hover:text-blue-300 text-sm">
+          + Add Component
+        </button>
+      </div>
+
+      <div class="flex justify-end space-x-4">
+        <button type="button" onclick="closeNewIncidentModal()"
+          class="px-4 py-2 text-gray-400 hover:text-white">
+          Cancel
+        </button>
+        <button type="submit"
+          class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+          Create Incident
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Post-Mortem Modal -->
+<div id="postMortemModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center">
+  <div class="bg-dark-800 rounded-lg p-6 max-w-2xl w-full mx-4">
+    <div class="flex justify-between items-center mb-6">
+      <h2 class="text-2xl font-semibold text-white">Add Post-Mortem</h2>
+      <button onclick="closePostMortemModal()" class="text-gray-400 hover:text-white">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+
+    <form id="postMortemForm" class="space-y-6">
+      <input type="hidden" name="_csrf" value="<%= locals.csrfToken %>">
+      <input type="hidden" id="incidentId" name="incidentId">
+      
+      <div>
+        <label for="summary" class="block text-sm font-medium text-gray-400 mb-2">Summary</label>
+        <textarea id="summary" name="summary" rows="3" required
+          class="w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"></textarea>
+      </div>
+
+      <div>
+        <label for="rootCause" class="block text-sm font-medium text-gray-400 mb-2">Root Cause</label>
+        <textarea id="rootCause" name="rootCause" rows="3" required
+          class="w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"></textarea>
+      </div>
+
+      <div>
+        <label for="resolution" class="block text-sm font-medium text-gray-400 mb-2">Resolution</label>
+        <textarea id="resolution" name="resolution" rows="3" required
+          class="w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"></textarea>
+      </div>
+
+      <div>
+        <label for="prevention" class="block text-sm font-medium text-gray-400 mb-2">Prevention Measures</label>
+        <textarea id="prevention" name="prevention" rows="3" required
+          class="w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"></textarea>
+      </div>
+
+      <div class="flex justify-end space-x-4">
+        <button type="button" onclick="closePostMortemModal()"
+          class="px-4 py-2 text-gray-400 hover:text-white">
+          Cancel
+        </button>
+        <button type="submit"
+          class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+          Save Post-Mortem
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<%- contentFor('scripts') %>
+<script>
+  // Get CSRF token from meta tag
+  const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+  // Function to handle new incident submission
+  async function handleNewIncident(event) {
+    event.preventDefault();
+    const form = event.target;
+    const formData = new FormData(form);
+
+    try {
+      const response = await fetch('/api/incidents', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'CSRF-Token': csrfToken
+        },
+        body: JSON.stringify(Object.fromEntries(formData))
+      });
+
+      if (response.ok) {
+        window.location.reload();
+      } else {
+        const error = await response.json();
+        alert(error.message || 'Failed to create incident');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      alert('Failed to create incident');
+    }
+  }
+
+  // Function to handle post-mortem submission
+  async function handlePostMortem(event) {
+    event.preventDefault();
+    const form = event.target;
+    const formData = new FormData(form);
+
+    try {
+      const response = await fetch(`/api/incidents/${form.dataset.incidentId}/post-mortem`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'CSRF-Token': csrfToken
+        },
+        body: JSON.stringify(Object.fromEntries(formData))
+      });
+
+      if (response.ok) {
+        window.location.reload();
+      } else {
+        const error = await response.json();
+        alert(error.message || 'Failed to add post-mortem');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      alert('Failed to add post-mortem');
+    }
+  }
+
+  // Add event listeners
+  document.getElementById('newIncidentForm').addEventListener('submit', handleNewIncident);
+  document.getElementById('postMortemForm').addEventListener('submit', handlePostMortem);
+
+  // Modal functions
+  function openNewIncidentModal() {
+    document.getElementById('newIncidentModal').classList.remove('hidden');
+    document.getElementById('newIncidentModal').classList.add('flex');
+  }
+
+  function closeNewIncidentModal() {
+    document.getElementById('newIncidentModal').classList.remove('flex');
+    document.getElementById('newIncidentModal').classList.add('hidden');
+  }
+
+  function openPostMortemModal(incidentId) {
+    document.getElementById('incidentId').value = incidentId;
+    document.getElementById('postMortemModal').classList.remove('hidden');
+    document.getElementById('postMortemModal').classList.add('flex');
+  }
+
+  function closePostMortemModal() {
+    document.getElementById('postMortemModal').classList.remove('flex');
+    document.getElementById('postMortemModal').classList.add('hidden');
+  }
+
+  // Add component input
+  function addComponentInput() {
+    const container = document.getElementById('componentsContainer');
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.name = 'affectedComponents[]';
+    input.className = 'w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white';
+    input.placeholder = 'Enter a component name';
+    container.appendChild(input);
+  }
+
+  // Helper function for status colors
+  function getStatusColor(status) {
+    const colors = {
+      'investigating': 'text-yellow-400',
+      'identified': 'text-blue-400',
+      'monitoring': 'text-purple-400',
+      'resolved': 'text-green-400',
+      'post-mortem': 'text-gray-400'
+    };
+    return colors[status] || 'text-gray-400';
+  }
+</script> 

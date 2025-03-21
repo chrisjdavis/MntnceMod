@@ -156,6 +156,36 @@ exports.updateSubscription = async (req, res) => {
   }
 };
 
+exports.confirmSubscriptionChange = async (req, res) => {
+  try {
+    const { planCode } = req.body;
+    
+    // Validate plan exists and is active
+    const newPlan = await SubscriptionPlan.findOne({ code: planCode, isActive: true });
+    if (!newPlan) {
+      req.flash('error', 'Invalid plan selected');
+      return res.redirect('/settings/subscription');
+    }
+
+    // Get current plan details
+    const currentPlan = await req.user.getPlanDetails();
+
+    // Render confirmation page
+    res.render('settings/subscription-confirm', {
+      user: req.user,
+      active: 'subscription',
+      currentPlan,
+      newPlan,
+      title: 'Confirm Subscription Change',
+      path: '/settings/subscription'
+    });
+  } catch (error) {
+    console.error('Error confirming subscription change:', error);
+    req.flash('error', 'Failed to confirm subscription change');
+    res.redirect('/settings/subscription');
+  }
+};
+
 exports.getSecurity = async (req, res) => {
   try {
     const loginHistory = await LoginHistory.find({ user: req.user._id })

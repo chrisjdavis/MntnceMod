@@ -14,102 +14,187 @@ title = 'Cloudflare Configuration';
   <%- include('../../partials/messages') %>
   <%- include('../../partials/tabs') %>
 
-  <div class="space-y-4 border rounded-lg p-4">
-    <div>
-      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Email</label>
-      <div class="mt-1 text-sm text-gray-900 dark:text-white"><%= config.email %></div>
-    </div>
-
-    <div>
-      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Account ID</label>
-      <div class="mt-1 text-sm text-gray-900 dark:text-white"><%= config.accountId %></div>
-    </div>
-
-    <div>
-      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Zone ID</label>
-      <div class="mt-1 text-sm text-gray-900 dark:text-white"><%= config.zoneId %></div>
-    </div>
-
-    <div>
-      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">KV Namespace ID</label>
-      <div class="mt-1 text-sm text-gray-900 dark:text-white"><%= config.kvNamespaceId %></div>
-    </div>
-
-    <div>
-      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Worker Name</label>
-      <div class="mt-1 text-sm text-gray-900 dark:text-white"><%= config.workerName %></div>
-    </div>
-
-    <div>
-      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Last Used</label>
-      <div class="mt-1 text-sm text-gray-900 dark:text-white">
-        <%= new Date(config.lastUsed).toLocaleString() %>
+  <div class="mt-8">
+    <div class="border shadow rounded-lg p-6">
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Current Configuration</h2>
+        <div class="flex space-x-3">
+          <a href="/settings/cloudflare/edit" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+            Edit Configuration
+          </a>
+          <a href="/settings/cloudflare/test" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+            Test Connection
+          </a>
+          <form action="/settings/cloudflare/delete" method="POST" class="inline-block">
+            <input type="hidden" name="_csrf" value="<%= locals.csrfToken %>">
+            <button type="submit" onclick="return confirm('Are you sure you want to delete your Cloudflare configuration?')" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+              Delete Configuration
+            </button>
+          </form>
+        </div>
       </div>
+
+      <!-- View Mode -->
+      <div id="viewMode" class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Email</label>
+          <div class="mt-1 text-sm text-gray-900 dark:text-white"><%= config.email %></div>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Account ID</label>
+          <div class="mt-1 text-sm text-gray-900 dark:text-white"><%= config.accountId %></div>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Zone ID</label>
+          <div class="mt-1 text-sm text-gray-900 dark:text-white"><%= config.zoneId %></div>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">KV Namespace ID</label>
+          <div class="mt-1 text-sm text-gray-900 dark:text-white"><%= config.kvNamespaceId %></div>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Worker Name</label>
+          <div class="mt-1 text-sm text-gray-900 dark:text-white"><%= config.workerName %></div>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Last Used</label>
+          <div class="mt-1 text-sm text-gray-900 dark:text-white">
+            <%= new Date(config.lastUsed).toLocaleString() %>
+          </div>
+        </div>
+      </div>
+
+      <!-- Edit Mode -->
+      <form id="editMode" action="/settings/cloudflare/save" method="POST" class="hidden space-y-6">
+        <input type="hidden" name="_csrf" value="<%= locals.csrfToken %>">
+        <div>
+          <label for="apiToken" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">API Token</label>
+          <input type="password" id="apiToken" name="apiToken"
+            class="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white">
+          <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Leave blank to keep current token</p>
+        </div>
+
+        <div>
+          <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Email</label>
+          <input type="email" id="email" name="email" required
+            value="<%= config.email %>"
+            class="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white">
+        </div>
+
+        <div>
+          <label for="accountId" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Account ID</label>
+          <input type="text" id="accountId" name="accountId" required
+            value="<%= config.accountId %>"
+            class="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white">
+        </div>
+
+        <div>
+          <label for="zoneId" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Zone ID</label>
+          <input type="text" id="zoneId" name="zoneId" required
+            value="<%= config.zoneId %>"
+            class="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white">
+        </div>
+
+        <div>
+          <label for="kvNamespaceId" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">KV Namespace ID</label>
+          <input type="text" id="kvNamespaceId" name="kvNamespaceId" required
+            value="<%= config.kvNamespaceId %>"
+            class="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white">
+        </div>
+
+        <div>
+          <label for="workerName" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Worker Name</label>
+          <input type="text" id="workerName" name="workerName"
+            value="<%= config.workerName %>"
+            class="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white">
+          <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Optional. Default: maintenance-worker</p>
+        </div>
+
+        <div class="flex justify-end space-x-3">
+          <button type="button" id="cancelEdit" class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 text-sm font-medium rounded-md shadow-sm text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+            Cancel
+          </button>
+          <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+            Save Changes
+          </button>
+        </div>
+      </form>
     </div>
-  </div>
-
-  <div class="mt-6 flex space-x-3">
-    <button id="testConnection" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-      Test Connection
-    </button>
-
-    <form action="/settings/cloudflare/delete" method="POST" class="inline-block">
-      <input type="hidden" name="_csrf" value="<%= locals.csrfToken %>">
-      <button type="submit" onclick="return confirm('Are you sure you want to delete your Cloudflare configuration?')" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
-        Delete Configuration
-      </button>
-    </form>
   </div>
 </div>
 
 <%- contentFor('scripts') %>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+  const viewMode = document.getElementById('viewMode');
+  const editMode = document.getElementById('editMode');
+  const editButton = document.getElementById('editConfig');
+  const cancelButton = document.getElementById('cancelEdit');
   const testButton = document.getElementById('testConnection');
-  if (!testButton) {
-    console.error('Test connection button not found');
-    return;
+
+  // Edit mode toggle
+  if (editButton && viewMode && editMode) {
+    editButton.addEventListener('click', function() {
+      viewMode.classList.add('hidden');
+      editMode.classList.remove('hidden');
+    });
   }
 
-  testButton.addEventListener('click', async function() {
-    const button = this;
-    const originalText = button.textContent;
-    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-    
-    try {
-      button.disabled = true;
-      button.textContent = 'Testing...';
+  // Cancel edit mode
+  if (cancelButton && viewMode && editMode) {
+    cancelButton.addEventListener('click', function() {
+      viewMode.classList.remove('hidden');
+      editMode.classList.add('hidden');
+    });
+  }
+
+  // Test connection
+  if (testButton) {
+    testButton.addEventListener('click', async function() {
+      const button = this;
+      const originalText = button.textContent;
+      const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
       
-      console.log('Sending test request...');
-      const response = await fetch('/settings/cloudflare/test', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'CSRF-Token': csrfToken
-        },
-        credentials: 'same-origin'
-      });
-      
-      console.log('Response status:', response.status);
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+      try {
+        button.disabled = true;
+        button.textContent = 'Testing...';
+        
+        console.log('Sending test request...');
+        const response = await fetch('/settings/cloudflare/test', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'CSRF-Token': csrfToken
+          },
+          credentials: 'same-origin'
+        });
+        
+        console.log('Response status:', response.status);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        console.log('Response data:', data);
+        
+        if (data.success) {
+          alert('Connection successful! Your Cloudflare configuration is working correctly.');
+        } else {
+          alert('Connection failed: ' + (data.error || 'Unknown error'));
+        }
+      } catch (error) {
+        console.error('Error testing connection:', error);
+        alert('Error testing connection: ' + error.message);
+      } finally {
+        button.disabled = false;
+        button.textContent = originalText;
       }
-      
-      const data = await response.json();
-      console.log('Response data:', data);
-      
-      if (data.success) {
-        alert('Connection successful! Your Cloudflare configuration is working correctly.');
-      } else {
-        alert('Connection failed: ' + (data.error || 'Unknown error'));
-      }
-    } catch (error) {
-      console.error('Error testing connection:', error);
-      alert('Error testing connection: ' + error.message);
-    } finally {
-      button.disabled = false;
-      button.textContent = originalText;
-    }
-  });
+    });
+  }
 });
 </script> 
