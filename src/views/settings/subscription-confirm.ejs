@@ -7,9 +7,15 @@ title = 'Confirm Subscription Change';
   <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
     <!-- Page Header -->
     <div class="px-4 py-5 sm:px-0">
-      <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Confirm Subscription Change</h1>
-      <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Please review your subscription change before confirming</p>
+      <div class="flex justify-between items-center">
+        <h1 class="text-3xl font-bold text-white">Confirm Subscription Change</h1>
+        <a href="/settings/subscription" class="text-blue-400 hover:text-blue-300">
+          Back to Plans
+        </a>
+      </div>
     </div>
+
+    <%- include('../partials/messages') %>
 
     <%- include('../partials/tabs') %>
 
@@ -86,12 +92,6 @@ title = 'Confirm Subscription Change';
                 </svg>
                 Page limit: <%= currentPlan.limits.pages %> → <%= newPlan.limits.pages %>
               </li>
-              <li class="flex items-center text-sm text-gray-300">
-                <svg class="h-4 w-4 text-blue-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                </svg>
-                Views per page: <%= currentPlan.limits.viewsPerPage.toLocaleString() %> → <%= newPlan.limits.viewsPerPage.toLocaleString() %>
-              </li>
             </ul>
           </div>
         </div>
@@ -100,13 +100,19 @@ title = 'Confirm Subscription Change';
           <a href="/settings/subscription" class="px-4 py-2 text-gray-300 hover:text-white">
             Cancel
           </a>
-          <form action="/settings/subscription/change-plan" method="POST">
-            <input type="hidden" name="_csrf" value="<%= locals.csrfToken %>">
-            <input type="hidden" name="planCode" value="<%= newPlan.code %>">
-            <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-              Confirm Change
-            </button>
-          </form>
+          <% if (newPlan.code !== 'free' && !user.subscription.stripeCustomerId) { %>
+            <a href="/settings/subscription/payment?planCode=<%= newPlan.code %>" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+              Add Payment Method
+            </a>
+          <% } else { %>
+            <form action="/settings/subscription" method="POST" class="inline">
+              <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+              <input type="hidden" name="plan" value="<%= newPlan.code %>">
+              <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                Confirm Change
+              </button>
+            </form>
+          <% } %>
         </div>
       </div>
     </div>

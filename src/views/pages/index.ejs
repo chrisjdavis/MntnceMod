@@ -54,17 +54,12 @@ locals.currentPath = '/pages';
                 <span class="text-sm font-medium" id="page-count"><%= pages.length %> / <%= user.subscriptionLimits.pages %></span>
               </div>
               <div class="flex justify-between items-center">
-                <span class="text-sm text-muted-foreground">Views Per Page</span>
-                <span class="text-sm font-medium" id="views-per-page"><%= user.subscriptionLimits.viewsPerPage.toLocaleString() %></span>
-              </div>
-              <div class="flex justify-between items-center">
-                <span class="text-sm text-muted-foreground">Total Monthly Views</span>
+                <span class="text-sm text-muted-foreground">Total Views</span>
                 <span class="text-sm font-medium" id="total-views">
                   <% 
                     const totalViews = pages.reduce((sum, page) => sum + (page.analytics?.totalViews || 0), 0);
-                    const maxViews = user.subscriptionLimits.viewsPerPage * user.subscriptionLimits.pages;
                   %>
-                  <%= totalViews.toLocaleString() %> / <%= maxViews.toLocaleString() %>
+                  <%= totalViews.toLocaleString() %>
                 </span>
               </div>
             </div>

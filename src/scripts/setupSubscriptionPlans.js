@@ -12,13 +12,11 @@ const plans = [
     interval: 'month',
     features: [
       '1 maintenance page',
-      '1,000 views per page per month',
       'Basic customization',
       'Standard support'
     ],
     limits: {
-      pages: 1,
-      viewsPerPage: 1000
+      pages: 1
     },
     stripePriceId: 'free',
     isActive: true
@@ -31,14 +29,12 @@ const plans = [
     interval: 'month',
     features: [
       '5 maintenance pages',
-      '5,000 views per page per month',
       'Advanced customization',
       'Priority support',
       'Custom domains'
     ],
     limits: {
-      pages: 5,
-      viewsPerPage: 5000
+      pages: 5
     },
     stripePriceId: 'price_basic_monthly',
     isActive: true
@@ -51,7 +47,6 @@ const plans = [
     interval: 'month',
     features: [
       '20 maintenance pages',
-      '20,000 views per page per month',
       'Advanced customization',
       'Priority support',
       'Custom domains',
@@ -59,8 +54,7 @@ const plans = [
       'API access'
     ],
     limits: {
-      pages: 20,
-      viewsPerPage: 20000
+      pages: 20
     },
     stripePriceId: 'price_pro_monthly',
     isActive: true
@@ -73,7 +67,6 @@ const plans = [
     interval: 'month',
     features: [
       'Unlimited maintenance pages',
-      'Unlimited views per page',
       'Advanced customization',
       '24/7 priority support',
       'Custom domains',
@@ -82,8 +75,7 @@ const plans = [
       'Dedicated account manager'
     ],
     limits: {
-      pages: 999999,
-      viewsPerPage: 999999
+      pages: 999999
     },
     stripePriceId: 'price_enterprise_monthly',
     isActive: true

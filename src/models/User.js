@@ -12,7 +12,8 @@ const userSchema = new mongoose.Schema({
   },
   name: {
     type: String,
-    required: true
+    required: true,
+    trim: true
   },
   password: {
     type: String,
@@ -49,28 +50,25 @@ const userSchema = new mongoose.Schema({
     type: String
   },
   subscription: {
-    status: {
-      type: String,
-      enum: ['active', 'canceled', 'past_due', 'unpaid', 'incomplete', 'incomplete_expired', 'trialing'],
-      default: 'active'
-    },
     plan: {
       type: String,
-      enum: ['free', 'hobby', 'basic', 'pro', 'enterprise'],
+      enum: ['free', 'basic', 'pro'],
       default: 'free'
     },
-    currentPeriodStart: Date,
-    currentPeriodEnd: Date,
-    cancelAtPeriodEnd: {
-      type: Boolean,
-      default: false
+    status: {
+      type: String,
+      enum: ['active', 'past_due', 'canceled', 'incomplete', 'incomplete_expired', 'trialing', 'unpaid'],
+      default: 'active'
     },
-    canceledAt: Date,
-    trialEndsAt: Date,
     stripeCustomerId: String,
-    stripeSubscriptionId: String
+    stripeSubscriptionId: String,
+    currentPeriodEnd: Date
   },
   createdAt: {
+    type: Date,
+    default: Date.now
+  },
+  updatedAt: {
     type: Date,
     default: Date.now
   }
@@ -85,6 +83,7 @@ userSchema.pre('save', function(next) {
       plan: this.subscription.plan
     });
   }
+  this.updatedAt = Date.now();
   next();
 });
 
@@ -96,12 +95,12 @@ userSchema.virtual('subscriptionLimits').get(async function() {
     
     if (!plan) {
       console.warn(`No plan found for code: ${this.subscription.plan}, falling back to free plan`);
-      return { pages: 1, viewsPerPage: 1000 };
+      return { pages: 1 };
     }
 
     if (!plan.isActive) {
       console.warn(`Plan ${this.subscription.plan} is not active, falling back to free plan`);
-      return { pages: 1, viewsPerPage: 1000 };
+      return { pages: 1 };
     }
 
     // Emit event when limits are fetched
@@ -114,7 +113,7 @@ userSchema.virtual('subscriptionLimits').get(async function() {
     return plan.limits;
   } catch (error) {
     console.error('Error fetching subscription limits:', error);
-    return { pages: 1, viewsPerPage: 1000 }; // Fallback to free plan limits
+    return { pages: 1 }; // Fallback to free plan limits
   }
 });
 
@@ -139,7 +138,6 @@ userSchema.methods.getPlanDetails = async function() {
         interval: 'forever',
         features: [
           '1 maintenance page',
-          '1,000 views per page',
           'Basic analytics',
           'Email support'
         ],
@@ -172,7 +170,6 @@ userSchema.methods.getPlanDetails = async function() {
       interval: 'forever',
       features: [
         '1 maintenance page',
-        '1,000 views per page',
         'Basic analytics',
         'Email support'
       ],

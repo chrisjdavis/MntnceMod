@@ -4,12 +4,13 @@ const subscriptionPlanSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
-    unique: true
+    trim: true
   },
   code: {
     type: String,
     required: true,
-    unique: true
+    unique: true,
+    trim: true
   },
   description: {
     type: String,
@@ -19,10 +20,9 @@ const subscriptionPlanSchema = new mongoose.Schema({
     type: Number,
     required: true
   },
-  interval: {
+  stripePriceId: {
     type: String,
-    enum: ['month', 'year'],
-    required: true
+    required: false
   },
   features: [{
     type: String,
@@ -31,16 +31,14 @@ const subscriptionPlanSchema = new mongoose.Schema({
   limits: {
     pages: {
       type: Number,
-      required: true
+      required: true,
+      default: 1
     },
     viewsPerPage: {
       type: Number,
-      required: true
+      required: true,
+      default: 1000
     }
-  },
-  stripePriceId: {
-    type: String,
-    required: true
   },
   isActive: {
     type: Boolean,
@@ -62,6 +60,6 @@ subscriptionPlanSchema.pre('save', function(next) {
   next();
 });
 
-const SubscriptionPlan = mongoose.models.SubscriptionPlan || mongoose.model('SubscriptionPlan', subscriptionPlanSchema);
+const SubscriptionPlan = mongoose.model('SubscriptionPlan', subscriptionPlanSchema);
 
 module.exports = SubscriptionPlan; 

@@ -3,19 +3,55 @@ const mongoose = require('mongoose');
 const settingsSchema = new mongoose.Schema({
   siteName: {
     type: String,
-    default: 'StatusSaaS'
+    default: 'Maintenance Mode'
   },
-  siteUrl: String,
+  siteUrl: {
+    type: String,
+    default: 'http://localhost:3000'
+  },
   siteDescription: {
     type: String,
     default: 'Professional Status Page Management'
   },
-  smtpHost: String,
-  smtpPort: Number,
-  smtpUser: String,
-  smtpPass: String,
-  stripeSecretKey: String,
-  stripePublishableKey: String,
+  stripe: {
+    secretKey: {
+      type: String,
+      required: true
+    },
+    webhookSecret: {
+      type: String,
+      required: true
+    }
+  },
+  email: {
+    from: {
+      type: String,
+      default: 'noreply@example.com'
+    },
+    smtp: {
+      host: String,
+      port: Number,
+      secure: Boolean,
+      auth: {
+        user: String,
+        pass: String
+      }
+    }
+  },
+  maintenance: {
+    defaultTitle: {
+      type: String,
+      default: 'We\'re under maintenance'
+    },
+    defaultDescription: {
+      type: String,
+      default: 'We\'re performing some maintenance on our site. We\'ll be back shortly.'
+    },
+    defaultContent: {
+      type: String,
+      default: 'Thank you for your patience.'
+    }
+  },
   requireEmailVerification: {
     type: Boolean,
     default: false

@@ -101,6 +101,7 @@ const adminRoutes = require('./routes/admin');
 const webhookRoutes = require('./routes/webhook');
 const analyticsRoutes = require('./routes/analytics');
 const incidentRoutes = require('./routes/incidents');
+const subscriptionRoutes = require('./routes/subscription');
 
 // Routes
 app.use('/', indexRoutes);
@@ -114,6 +115,7 @@ app.use('/admin', adminRoutes);
 app.use('/webhook', webhookRoutes);
 app.use('/analytics', analyticsRoutes);
 app.use('/api', incidentRoutes);
+app.use('/api/subscription', subscriptionRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {

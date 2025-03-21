@@ -26,10 +26,12 @@ router.post('/appearance', settingsController.updateAppearance);
 router.get('/notifications', settingsController.getNotifications);
 router.post('/notifications', settingsController.updateNotifications);
 
-// Subscription settings
+// Subscription routes
 router.get('/subscription', settingsController.getSubscription);
+router.get('/subscription/payment', settingsController.getPaymentMethod);
+router.post('/subscription/add-payment-method', settingsController.addPaymentMethod);
+router.post('/subscription', settingsController.updateSubscription);
 router.post('/subscription/confirm', settingsController.confirmSubscriptionChange);
-router.post('/subscription/change-plan', settingsController.updateSubscription);
 
 // Security settings
 router.get('/security', settingsController.getSecurity);

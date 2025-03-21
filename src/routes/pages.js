@@ -292,7 +292,8 @@ router.delete('/:id', isAuthenticated, async (req, res) => {
 
     // Delete from Cloudflare if deployed
     if (page.domain) {
-      await cloudflare.deleteMaintenancePage(page.domain);
+      const cloudflareService = new CloudflareService(req.user);
+      await cloudflareService.deleteMaintenancePage(page.domain);
     }
 
     // Delete from database
@@ -451,10 +452,6 @@ router.post('/:id/toggle', isAuthenticated, async (req, res) => {
     const newStatus = page.status === 'published' ? 'draft' : 'published';
     const cloudflareService = new CloudflareService(req.user);
     await cloudflareService.togglePage(page, newStatus);
-
-    // Update page status
-    page.status = newStatus;
-    await page.save();
 
     // Log activity
     await Activity.create({

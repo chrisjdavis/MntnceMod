@@ -510,7 +510,6 @@ router.post('/plans', isAdmin, async (req, res) => {
       interval,
       features,
       pages,
-      viewsPerPage,
       stripePriceId,
       isActive
     } = req.body;
@@ -523,8 +522,7 @@ router.post('/plans', isAdmin, async (req, res) => {
       interval,
       features: features.split('\n').filter(f => f.trim()),
       limits: {
-        pages: parseInt(pages),
-        viewsPerPage: parseInt(viewsPerPage)
+        pages: parseInt(pages)
       },
       stripePriceId,
       isActive: isActive === 'true'

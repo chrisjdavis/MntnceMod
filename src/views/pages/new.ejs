@@ -146,10 +146,19 @@ title = 'Create New Page';
 
       <div class="mt-6">
         <label for="customCSS" class="block text-sm font-medium text-gray-400 mb-2">Custom CSS</label>
-        <textarea id="customCSS" name="design[customCSS]" rows="5"
-          class="w-full px-3 py-2 bg-black border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white font-mono text-sm"
-          placeholder="/* Add your custom CSS here */"></textarea>
-        <p class="mt-1 text-sm text-gray-500">Optional. Add custom CSS to style your maintenance page.</p>
+        <% if (user.subscription.plan === 'basic' || user.subscription.plan === 'pro') { %>
+          <textarea id="customCSS" name="design[customCSS]" rows="4"
+            class="w-full px-3 py-2 bg-black border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white font-mono text-sm"
+            placeholder="/* Add your custom CSS here */"></textarea>
+          <p class="mt-1 text-sm text-gray-500">Optional. Add custom CSS to further customize your page.</p>
+        <% } else { %>
+          <div class="border rounded-md p-4 bg-black/50">
+            <div class="text-center">
+              <p class="text-sm text-gray-400 mb-2">Custom CSS is available in Basic and Pro plans</p>
+              <a href="/settings/subscription" class="text-blue-400 hover:text-blue-300 text-sm">Upgrade your plan</a>
+            </div>
+          </div>
+        <% } %>
       </div>
 
       <div class="flex justify-end space-x-4">

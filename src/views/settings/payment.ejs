@@ -1,0 +1,143 @@
+<%
+title = 'Add Payment Method';
+%>
+
+<%- contentFor('head') %>
+<script src="https://js.stripe.com/v3/"></script>
+
+<%- contentFor('body') %>
+<div class="min-h-screen">
+  <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+    <!-- Page Header -->
+    <div class="px-4 py-5 sm:px-0">
+      <div class="flex justify-between items-center">
+        <h1 class="text-3xl font-bold text-white">Add Payment Method</h1>
+        <a href="/settings/subscription" class="text-blue-400 hover:text-blue-300">
+          Back to Plans
+        </a>
+      </div>
+    </div>
+
+    <%- include('../partials/messages') %>
+
+    <%- include('../partials/tabs') %>
+
+    <div class="mt-8">
+      <div class="border rounded-lg shadow-md p-6">
+        <div class="mb-8">
+          <h2 class="text-xl font-semibold text-white mb-2">Selected Plan</h2>
+          <p class="text-gray-300"><%= plan.name %></p>
+          <p class="text-gray-400 text-sm">$<%= plan.price %>/month</p>
+        </div>
+
+        <form id="payment-form" class="space-y-6">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+          <input type="hidden" name="planCode" value="<%= plan.code %>">
+          
+          <div>
+            <label for="card-element" class="block text-sm font-medium text-gray-400 mb-2">
+              Credit or debit card
+            </label>
+            <div id="card-element" class="w-full px-3 py-2 bg-black border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" style="min-height: 40px;">
+              <!-- Stripe Elements will insert the card input here -->
+            </div>
+            <div id="card-errors" class="mt-2 text-sm text-red-500" role="alert"></div>
+          </div>
+
+          <div class="flex justify-end space-x-4">
+            <a href="/settings/subscription" class="px-4 py-2 text-gray-300 hover:text-white">
+              Cancel
+            </a>
+            <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+              Add Payment Method
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- contentFor('scripts') %>
+<script src="https://js.stripe.com/v3/"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Initialize Stripe
+  const stripe = Stripe('<%= stripePublishableKey %>');
+  const elements = stripe.elements();
+
+  // Create card Element and mount it
+  const card = elements.create('card', {
+    style: {
+      base: {
+        fontSize: '16px',
+        color: '#ffffff',
+        '::placeholder': {
+          color: '#aab7c4'
+        },
+        backgroundColor: 'transparent'
+      },
+      invalid: {
+        color: '#fa755a',
+        iconColor: '#fa755a'
+      }
+    },
+    hidePostalCode: true
+  });
+
+  // Mount the card element
+  card.mount('#card-element');
+
+  // Handle form submission
+  const form = document.getElementById('payment-form');
+  form.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const submitButton = form.querySelector('button[type="submit"]');
+    submitButton.disabled = true;
+    submitButton.innerHTML = '<span class="loading loading-spinner"></span> Processing...';
+
+    try {
+      const { paymentMethod, error } = await stripe.createPaymentMethod({
+        type: 'card',
+        card: card,
+      });
+
+      if (error) {
+        const errorElement = document.getElementById('card-errors');
+        errorElement.textContent = error.message;
+        submitButton.disabled = false;
+        submitButton.innerHTML = 'Add Payment Method';
+      } else {
+        // Send paymentMethod.id to your server
+        const response = await fetch('/settings/subscription/add-payment-method', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-Token': document.querySelector('input[name="_csrf"]').value
+          },
+          body: JSON.stringify({
+            paymentMethodId: paymentMethod.id,
+            planCode: document.querySelector('input[name="planCode"]').value
+          })
+        });
+
+        if (response.ok) {
+          window.location.href = '/settings/subscription';
+        } else {
+          const error = await response.json();
+          const errorElement = document.getElementById('card-errors');
+          errorElement.textContent = error.message || 'An error occurred. Please try again.';
+          submitButton.disabled = false;
+          submitButton.innerHTML = 'Add Payment Method';
+        }
+      }
+    } catch (err) {
+      console.error('Error:', err);
+      const errorElement = document.getElementById('card-errors');
+      errorElement.textContent = 'An error occurred. Please try again.';
+      submitButton.disabled = false;
+      submitButton.innerHTML = 'Add Payment Method';
+    }
+  });
+});
+</script> 

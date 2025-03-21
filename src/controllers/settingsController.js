@@ -5,6 +5,7 @@ const LoginHistory = require('../models/LoginHistory');
 const bcrypt = require('bcryptjs');
 const speakeasy = require('speakeasy');
 const QRCode = require('qrcode');
+const paymentService = require('../services/paymentService');
 
 exports.getProfile = async (req, res) => {
   try {
@@ -105,7 +106,8 @@ exports.getSubscription = async (req, res) => {
       plans,
       pageCount,
       title: 'Subscription Settings',
-      path: '/settings/subscription'
+      path: '/settings/subscription',
+      stripePublishableKey: process.env.STRIPE_PUBLISHABLE_KEY
     });
   } catch (error) {
     console.error('Error loading subscription settings:', error);
@@ -114,44 +116,172 @@ exports.getSubscription = async (req, res) => {
   }
 };
 
-exports.updateSubscription = async (req, res) => {
+exports.getPaymentMethod = async (req, res) => {
   try {
-    const { planCode } = req.body;
+    const { planCode } = req.query;
     
     // Validate plan exists and is active
-    const newPlan = await SubscriptionPlan.findOne({ code: planCode, isActive: true });
-    if (!newPlan) {
+    const plan = await SubscriptionPlan.findOne({ code: planCode, isActive: true });
+    if (!plan) {
       req.flash('error', 'Invalid plan selected');
       return res.redirect('/settings/subscription');
     }
 
-    // Get current plan details
-    const currentPlan = await req.user.getPlanDetails();
-
-    // Allow downgrading to free plan at any time
-    if (planCode === 'free') {
-      req.user.subscription.plan = planCode;
-      req.user.subscription.status = 'active';
-      await req.user.save();
-      req.flash('success', 'Subscription plan updated successfully');
+    // Get Stripe publishable key from environment
+    const stripePublishableKey = process.env.STRIPE_PUBLISHABLE_KEY;
+    if (!stripePublishableKey) {
+      console.error('Stripe publishable key not configured');
+      req.flash('error', 'Payment system is not properly configured');
       return res.redirect('/settings/subscription');
     }
 
-    // For paid plans, check if user has an active subscription
-    if (!req.user.hasActiveSubscription()) {
-      req.flash('error', 'Please activate your subscription before changing plans');
-      return res.redirect('/settings/subscription');
+    console.log('Loading payment page with Stripe key:', stripePublishableKey.substring(0, 10) + '...');
+
+    res.render('settings/payment', {
+      user: req.user,
+      active: 'subscription',
+      plan,
+      title: 'Add Payment Method',
+      path: '/settings/subscription',
+      stripePublishableKey
+    });
+  } catch (error) {
+    console.error('Error loading payment method form:', error);
+    req.flash('error', 'Failed to load payment method form');
+    res.redirect('/settings/subscription');
+  }
+};
+
+exports.addPaymentMethod = async (req, res) => {
+  try {
+    const { paymentMethodId, planCode } = req.body;
+    
+    // Validate plan exists and is active
+    const plan = await SubscriptionPlan.findOne({ code: planCode, isActive: true });
+    if (!plan) {
+      return res.status(400).json({ error: 'Invalid plan selected' });
+    }
+
+    // Get or create Stripe customer
+    let customerId = req.user.subscription.stripeCustomerId;
+    if (!customerId) {
+      const customer = await paymentService.createCustomer(req.user.email, paymentMethodId);
+      customerId = customer.id;
+      req.user.subscription.stripeCustomerId = customerId;
+      await req.user.save();
+    } else {
+      // If customer exists, attach the new payment method
+      await paymentService.attachPaymentMethod(customerId, paymentMethodId);
+    }
+
+    // Create or update subscription
+    if (req.user.subscription.stripeSubscriptionId) {
+      await paymentService.updateSubscription(
+        req.user.subscription.stripeSubscriptionId,
+        plan.stripePriceId
+      );
+    } else {
+      const subscription = await paymentService.createSubscription(
+        customerId,
+        plan.stripePriceId
+      );
+      req.user.subscription.stripeSubscriptionId = subscription.id;
+      req.user.subscription.currentPeriodEnd = new Date(subscription.current_period_end * 1000);
     }
 
     // Update user's subscription plan
     req.user.subscription.plan = planCode;
+    req.user.subscription.status = 'active';
     await req.user.save();
 
-    req.flash('success', 'Subscription plan updated successfully');
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Error adding payment method:', error);
+    res.status(400).json({ error: error.message });
+  }
+};
+
+exports.updateSubscription = async (req, res) => {
+  try {
+    const { plan } = req.body;
+    const user = req.user;
+
+    // Validate plan
+    const selectedPlan = await SubscriptionPlan.findOne({ code: plan });
+    if (!selectedPlan || !selectedPlan.isActive) {
+      req.flash('error', 'Invalid subscription plan selected');
+      return res.redirect('/settings/subscription');
+    }
+
+    // Allow downgrading to free plan at any time
+    if (plan === 'free') {
+      if (user.subscription.stripeSubscriptionId) {
+        await paymentService.cancelSubscription(user.subscription.stripeSubscriptionId);
+      }
+      
+      user.subscription = {
+        plan: 'free',
+        status: 'active',
+        currentPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) // 30 days from now
+      };
+      
+      await user.save();
+      req.flash('success', 'Successfully downgraded to free plan');
+      return res.redirect('/settings/subscription');
+    }
+
+    // For paid plans, ensure user has a payment method
+    if (!user.subscription.stripeCustomerId) {
+      req.flash('error', 'Please add a payment method before upgrading to a paid plan');
+      return res.redirect(`/settings/subscription/payment?planCode=${plan}`);
+    }
+
+    // Get the customer's payment methods
+    const stripe = await paymentService.getStripe();
+    const paymentMethods = await stripe.paymentMethods.list({
+      customer: user.subscription.stripeCustomerId,
+      type: 'card'
+    });
+
+    if (!paymentMethods.data.length) {
+      req.flash('error', 'No payment method found. Please add a payment method.');
+      return res.redirect(`/settings/subscription/payment?planCode=${plan}`);
+    }
+
+    // Use the first payment method
+    const paymentMethodId = paymentMethods.data[0].id;
+
+    // Update subscription in Stripe
+    let stripeSubscription;
+    if (user.subscription.stripeSubscriptionId) {
+      stripeSubscription = await paymentService.updateSubscription(
+        user.subscription.stripeSubscriptionId,
+        selectedPlan.stripePriceId,
+        paymentMethodId
+      );
+    } else {
+      stripeSubscription = await paymentService.createSubscription(
+        user.subscription.stripeCustomerId,
+        selectedPlan.stripePriceId,
+        paymentMethodId
+      );
+    }
+
+    // Update user's subscription details
+    user.subscription = {
+      plan: plan,
+      status: stripeSubscription.status,
+      stripeCustomerId: user.subscription.stripeCustomerId,
+      stripeSubscriptionId: stripeSubscription.id,
+      currentPeriodEnd: new Date(stripeSubscription.current_period_end * 1000)
+    };
+
+    await user.save();
+    req.flash('success', 'Successfully updated subscription');
     res.redirect('/settings/subscription');
   } catch (error) {
     console.error('Error updating subscription:', error);
-    req.flash('error', 'Failed to update subscription');
+    req.flash('error', 'Failed to update subscription. Please try again.');
     res.redirect('/settings/subscription');
   }
 };
@@ -165,6 +295,11 @@ exports.confirmSubscriptionChange = async (req, res) => {
     if (!newPlan) {
       req.flash('error', 'Invalid plan selected');
       return res.redirect('/settings/subscription');
+    }
+
+    // If it's a paid plan and user doesn't have a payment method, redirect to payment collection
+    if (newPlan.code !== 'free' && !req.user.subscription.stripeCustomerId) {
+      return res.redirect(`/settings/subscription/payment?planCode=${planCode}`);
     }
 
     // Get current plan details
