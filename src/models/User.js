@@ -118,6 +118,11 @@ userSchema.virtual('subscriptionLimits').get(async function() {
   }
 });
 
+// Virtual for isAdmin
+userSchema.virtual('isAdmin').get(function() {
+  return this.role === 'admin';
+});
+
 // Method to get full plan details
 userSchema.methods.getPlanDetails = async function() {
   try {

@@ -222,4 +222,4 @@
 
 #admin-menu a {
   @apply block px-4 py-2 text-sm text-[#A1A1AA] hover:text-white hover:bg-[#1A1A1A] transition-colors duration-200;
-} 
+}

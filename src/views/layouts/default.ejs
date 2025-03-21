@@ -6,9 +6,52 @@
     <meta name="csrf-token" content="<%= locals.csrfToken %>">
     <title><%= locals.title || locals.settings?.siteName || 'StatusSaaS' %></title>
     <link href="/css/output.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://vercel.com/static/fonts/geist-mono/GeistMono-Regular.woff2" rel="stylesheet" as="font" type="font/woff2" crossorigin>
+    <link href="https://vercel.com/static/fonts/geist-mono/GeistMono-Medium.woff2" rel="stylesheet" as="font" type="font/woff2" crossorigin>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="/js/theme.js"></script>
     <%- locals.head %>
+    <style>
+        @font-face {
+            font-family: 'Geist Mono';
+            src: url('https://vercel.com/static/fonts/geist-mono/GeistMono-Regular.woff2') format('woff2');
+            font-weight: 400;
+            font-style: normal;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: 'Geist Mono';
+            src: url('https://vercel.com/static/fonts/geist-mono/GeistMono-Medium.woff2') format('woff2');
+            font-weight: 500;
+            font-style: normal;
+            font-display: swap;
+        }
+        
+        /* Set default font to Geist Mono */
+        body {
+            font-family: 'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+        }
+        
+        /* Set headers to Inter */
+        h1, h2, h3, h4, h5, h6, 
+        .font-heading {
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Add font-heading class to nav brand */
+        .brand-text {
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Override any font-sans classes to use Geist Mono */
+        .font-sans {
+            font-family: 'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace !important;
+        }
+    </style>
 </head>
 <body class="min-h-screen bg-background font-sans antialiased">
     <!-- Navigation -->
@@ -22,7 +65,7 @@
                             <% if (locals.settings?.logo) { %>
                                 <img src="<%= locals.settings.logo %>" alt="<%= locals.settings?.siteName || 'Logo' %>" class="h-8 w-auto">
                             <% } %>
-                            <span class="text-2xl font-semibold text-foreground"><%= locals.settings?.siteName || 'StatusSaaS' %></span>
+                            <span class="text-2xl font-semibold text-foreground brand-text"><%= locals.settings?.siteName || 'StatusSaaS' %></span>
                         </a>
                     </div>
                 </div>
@@ -36,6 +79,21 @@
                         <a href="/pricing" class="text-muted-foreground hover:text-foreground transition-colors duration-200">
                             Pricing
                         </a>
+                        <% if (locals.user) { %>
+                            <div class="flex space-x-8 ml-8">
+                            <a href="/dashboard" class="text-muted-foreground hover:text-foreground transition-colors duration-200">
+                                Dashboard
+                            </a>
+                            <a href="/settings" class="text-muted-foreground hover:text-foreground transition-colors duration-200">
+                                Settings
+                            </a>
+                            <% if (locals.user && locals.user.role === 'admin') { %>
+                                <a href="/admin" class="text-muted-foreground hover:text-foreground transition-colors duration-200">
+                                    App Superadmin
+                                </a>
+                            <% } %>
+                            </div>
+                        <% } %>
                     </div>
                 </div>
 
@@ -80,7 +138,7 @@
 
                             <!-- Dropdown menu -->
                             <div
-                                class="hidden absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-popover text-popover-foreground shadow-md ring-1 ring-black ring-opacity-5 focus:outline-none"
+                                class="hidden absolute right-0 z-10 mt-2 w-56 origin-top-right border rounded-md bg-popover text-popover-foreground shadow-md ring-1 ring-black ring-opacity-5 focus:outline-none"
                                 role="menu"
                                 id="user-menu"
                             >
@@ -89,27 +147,8 @@
                                     <p class="text-sm text-muted-foreground truncate"><%= locals.user.email %></p>
                                 </div>
                                 <div class="p-1">
-                                    <a
-                                        href="/dashboard"
-                                        class="relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                                    >
-                                        Dashboard
-                                    </a>
-                                    <a
-                                        href="/settings"
-                                        class="relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                                    >
-                                        Settings
-                                    </a>
-                                    <% if (locals.user.isAdmin) { %>
-                                        <a
-                                            href="/admin"
-                                            class="relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                                        >
-                                            App Superadmin
-                                        </a>
-                                    <% } %>
                                     <form action="/auth/logout" method="POST">
+                                        <input type="hidden" name="_csrf" value="<%= locals.csrfToken %>">
                                         <button
                                             type="submit"
                                             class="relative flex w-full cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
